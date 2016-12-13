@@ -1,10 +1,12 @@
 import csv
 import pickle
-
+import os
 def print_rules_to_csv(subj):
    
     
     rf_name = subj + "/" + subj + "_rules.dump"
+    if not os.path.exists(rf_name):
+        return
     rules_file = open(rf_name, 'r')
     all_rules = pickle.load(rules_file)
     good, r60_70, r50_60, weird = all_rules
@@ -52,9 +54,9 @@ if __name__ == '__main__':
                 'Animal': "http://dbpedia.org/ontology/Animal",
                 'Mammal': "http://dbpedia.org/ontology/Mammal",
                 'Software': "http://dbpedia.org/ontology/Software"}
-    subjects0 = {'Animal': "http://dbpedia.org/ontology/Animal"}
+    subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
     
-    for s, suri in subjects0.items():
+    for s, suri in subjects_f.items():
        
        
         print_rules_to_csv(s)

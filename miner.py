@@ -178,29 +178,21 @@ def update_so_dict(p, s):
     return o_list
 
 def get_p_dict_from_dump(quick, dump_name):
-    p_dict = {}
-    if quick:
-        p_dict["http://dbpedia.org/property/placeOfDeath"] = 0
-        p_dict["http://dbpedia.org/property/placeOfDeath"] = 0
-        p_dict["http://dbpedia.org/property/birthPlace"] = 0
-        p_dict["http://dbpedia.org/property/party"] = 0
-        p_dict["http://dbpedia.org/property/deathPlace"] = 0
-        p_dict["http://dbpedia.org/property/subfamilia"] = 0
-
-        p_dict["http://dbpedia.org/property/superfamilia"] = 0
-        p_dict["http://dbpedia.org/property/region"] = 0
-        p_dict["http://dbpedia.org/property/nextElection"] = 0
-
-        p_dict["http://dbpedia.org/property/magazine"] = 0
-
-        p_dict["http://dbpedia.org/property/director"] = 0
-        p_dict["http://dbpedia.org/property/city"] = 0
-        return p_dict
-
+    
+    
     p_dict_file = open(dump_name, 'r')
     p_dict = pickle.load(p_dict_file)
-
+    
     p_dict_file.close()
+    p_dict_ret = {}
+    if quick:
+        for i,p in enumerate(p_dict):
+            p_dict_ret[p] = 0
+            if i > 15 :
+                return p_dict_ret
+        
+
+    
     return p_dict
 
 

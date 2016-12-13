@@ -10,7 +10,7 @@ if __name__ == '__main__':
     db = DBPEDIA_URL
 
 
-    min_pos_th = 10 #a small number just to separate the bizzar rule as we will see in the example.
+    min_pos_th = 0 #a small number just to separate the bizzar rule as we will see in the example.
     positive_total_ratio_th = 0.82  #selected after trying few values found to be the most suitable for the ration between
     #positive to total appearence where the positive is when tuple (p,t ) is unique
     subjects_f= {'person': "http://dbpedia.org/ontology/Person",
@@ -24,14 +24,16 @@ if __name__ == '__main__':
                 'Software': "http://dbpedia.org/ontology/Software",
                 'Play': "http://dbpedia.org/ontology/Play"}
 
-    subjects1 = {'person': "http://dbpedia.org/ontology/Person",
-                'Manga': "http://dbpedia.org/ontology/Manga",
-                'Animal': "http://dbpedia.org/ontology/Animal",
-                'Mammal': "http://dbpedia.org/ontology/Mammal",
+    subjects1 = {'Manga': "http://dbpedia.org/ontology/Manga",
+                 'Mammal': "http://dbpedia.org/ontology/Mammal",
+                 'Event': "http://dbpedia.org/ontology/Event",
+                'Location': "http://dbpedia.org/ontology/Location",
+                'Organisation': "http://dbpedia.org/ontology/Organisation",
+                'Play': "http://dbpedia.org/ontology/Play",
                 'Software': "http://dbpedia.org/ontology/Software"}
-    subjects0 = {'Animal': "http://dbpedia.org/ontology/Animal"}
+    subjects0 = {'person': "http://dbpedia.org/ontology/Person"}
     
-    for s, suri in subjects0.items():
+    for s, suri in subjects1.items():
 
         all_rules = mine_rules(db, quick, s, min_pos_th, positive_total_ratio_th)
         #rf_name = "rules/" + s + "_rules.dump"
