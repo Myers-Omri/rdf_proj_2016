@@ -34,10 +34,10 @@ if __name__ == '__main__':
     for s, suri in subjects0.items():
 
         all_rules = mine_rules(db, quick, s, min_pos_th, positive_total_ratio_th)
-        rf_name = "rules/" + s + "_rules.dump"
-        rules_file = open(rf_name, 'w')
-        pickle.dump(all_rules, rules_file)
-        rules_file.close()
+        #rf_name = "rules/" + s + "_rules.dump"
+        #rules_file = open(rf_name, 'w')
+        #pickle.dump(all_rules, rules_file)
+        #rules_file.close()
 
         # incs_name = "incs/" + s + "_incs.dump"
         # rules, r60_70, r50_60, dumy = all_rules

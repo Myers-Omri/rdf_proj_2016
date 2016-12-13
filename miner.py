@@ -138,15 +138,16 @@ def mine_rules(db, quick, subjec_name, min_pos_th=0.2, positive_total_ratio_th=0
         sys.stdout.write(txt)
         sys.stdout.write("\r")
         sys.stdout.flush()
+    all_rules_list = (rules70_,rules60_70, rules50_60 ,rules_wierd)
     print "get p_rules done"
     dir_name = subjec_name
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
     dump_name = dir_name + "/" + subjec_name + "_rules.dump"
-    p_dict_file = open(dump_name, 'w')
-    pickle.dump(p_dict, p_dict_file)
-    p_dict_file.close()
-    return (rules70_,rules60_70, rules50_60 ,rules_wierd)
+    r_dict_file = open(dump_name, 'w')
+    pickle.dump(all_rules_list, r_dict_file)
+    r_dict_file.close()
+    return all_rules_list
 
 
 def update_so_dict(p, s):
