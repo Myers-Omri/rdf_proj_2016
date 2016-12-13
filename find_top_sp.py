@@ -90,7 +90,7 @@ def get_all_p_dict(uri, dump_name,dir_name):
                 }LIMIT 500000
                 }
                 ?s ?p ?o
-                FILTER regex(?p, "^http://dbpedia.org/property/", "i")
+                FILTER regex(?p, "^http://dbpedia.org/", "i")
             }GROUP BY ?p
              ORDER BY DESC(?cnt)
              LIMIT 50

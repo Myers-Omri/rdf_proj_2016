@@ -5,7 +5,7 @@ DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 
 
 if __name__ == '__main__':
-    quick = True
+    quick = False
 
     db = DBPEDIA_URL
 
