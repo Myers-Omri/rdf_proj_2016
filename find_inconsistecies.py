@@ -10,11 +10,16 @@ try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia
              {'p': "http://dbpedia.org/ontology/birthPlace", 't':"http://dbpedia.org/resource/City"}]
 
 
-def fix_dbpedia(db, rules, s_uri, subject_name, load=False):
+def fix_dbpedia(db, rules, s_uri, subj, load=True):
+
+
+    rf_name = subj + "/" + subj + "_rules.dump"
+    if not os.path.exists(rf_name):
+        return
 
     sparql = SPARQLWrapper(db)
     if load:
-        rules_file = open(rules, 'r')
+        rules_file = open(rf_name, 'r')
         all_rules = pickle.load(rules_file)
         (rules, r_67, r_56,r4) = all_rules
         rules_file.close()
@@ -53,11 +58,11 @@ def fix_dbpedia(db, rules, s_uri, subject_name, load=False):
                 inco_dict[s] = []
             inco_dict[s].append((p, t))
 
-    if not os.path.exists(subject_name):
-        os.makedirs(subject_name)
+    if not os.path.exists(subj):
+        os.makedirs(subj)
 
-    dump_name = subject_name + "_incs.dump"
-    inc_file = open(subject_name + "/" + dump_name, 'w')
+    dump_name = subj + "_incs.dump"
+    inc_file = open(subj + "/" + dump_name, 'w')
 
     pickle.dump(inco_dict, inc_file)
     inc_file.close()
@@ -67,6 +72,25 @@ def fix_dbpedia(db, rules, s_uri, subject_name, load=False):
 
 
 if __name__ == '__main__':
-    uri = "http://dbpedia.org/ontology/Person"
-    fix_dbpedia(DBPEDIA_URL, try_rules,uri,"try_incs.dump", False)
+    subjects_f = {'person': "http://dbpedia.org/ontology/Person",
+                  'Event': "http://dbpedia.org/ontology/Event",
+                  'Location': "http://dbpedia.org/ontology/Location",
+                  'Organisation': "http://dbpedia.org/ontology/Organisation",
+                  'Manga': "http://dbpedia.org/ontology/Manga",
+                  'Animal': "http://dbpedia.org/ontology/Animal",
+                  'Mammal': "http://dbpedia.org/ontology/Mammal",
+                  'Eukaryote': "http://dbpedia.org/ontology/Eukaryote",
+                  'Software': "http://dbpedia.org/ontology/Software",
+                  'Play': "http://dbpedia.org/ontology/Play"}
+
+    subjects1 = {'person': "http://dbpedia.org/ontology/Person",
+             'Manga': "http://dbpedia.org/ontology/Manga",
+             'Animal': "http://dbpedia.org/ontology/Animal",
+             'Mammal': "http://dbpedia.org/ontology/Mammal",
+             'Software': "http://dbpedia.org/ontology/Software"}
+    subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
+
+    rules = {}
+    for s, suri in subjects_f.items():
+        fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
 
