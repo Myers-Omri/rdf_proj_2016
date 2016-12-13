@@ -27,7 +27,7 @@ def get_incs_f(subj_name):
 
 
 if __name__ == '__main__':
-    get_incs_f("try_incs.dump")
+    
 
     subjects_f = {'person': "http://dbpedia.org/ontology/Person",
                   'Event': "http://dbpedia.org/ontology/Event",
