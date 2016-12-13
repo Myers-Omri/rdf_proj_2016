@@ -4,7 +4,7 @@ import pickle
 def print_rules_to_csv(subj):
    
     
-    rf_name = "rules/" + subj + "_rules.dump"
+    rf_name = subj + "/" + subj + "_rules.dump"
     rules_file = open(rf_name, 'r')
     all_rules = pickle.load(rules_file)
     good, r60_70, r50_60, weird = all_rules
@@ -12,7 +12,8 @@ def print_rules_to_csv(subj):
     csv_names = ['good.csv', 'r60_70.csv', 'r50_60.csv', 'weird.csv']
 
     for rd, csvn in zip(all_rules, csv_names):
-        with open(csvn, 'w') as csvfile1:
+        csvf_name = subj + "/" + csvn
+        with open(csvf_name, 'w') as csvfile1:
             fieldnames = ['Property', 'Type', 'Ratio', 'support']
             writer = csv.DictWriter(csvfile1, fieldnames=fieldnames)
 
