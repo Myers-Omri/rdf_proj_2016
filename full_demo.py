@@ -32,16 +32,20 @@ if __name__ == '__main__':
                 'Play': "http://dbpedia.org/ontology/Play",
                 'Software': "http://dbpedia.org/ontology/Software"}
     subjects0 = {'person': "http://dbpedia.org/ontology/Person"}
-    
-    for s, suri in subjects1.items():
 
-        all_rules = mine_rules(db, quick, s, min_pos_th, positive_total_ratio_th)
-        #rf_name = "rules/" + s + "_rules.dump"
-        #rules_file = open(rf_name, 'w')
-        #pickle.dump(all_rules, rules_file)
-        #rules_file.close()
+    for s, suri in subjects.items():
+        mm = miner(db, s, suri)
+        all_rules = mm.mine_rules(quick, min_pos_th, positive_total_ratio_th)
 
-        # incs_name = "incs/" + s + "_incs.dump"
-        # rules, r60_70, r50_60, dumy = all_rules
-        # fix_dbpedia(db, rules, suri,incs_name, False)
-
+    # for s, suri in subjects0.items():
+    #
+    #     all_rules = mine_rules(db, quick, s, min_pos_th, positive_total_ratio_th)
+    #     #rf_name = "rules/" + s + "_rules.dump"
+    #     #rules_file = open(rf_name, 'w')
+    #     #pickle.dump(all_rules, rules_file)
+    #     #rules_file.close()
+    #
+    #     # incs_name = "incs/" + s + "_incs.dump"
+    #     # rules, r60_70, r50_60, dumy = all_rules
+    #     # fix_dbpedia(db, rules, suri,incs_name, False)
+    #
