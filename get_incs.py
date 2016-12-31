@@ -1,6 +1,6 @@
 import csv
 import pickle
-
+import os
 
 def get_incs_f(subj_name):
     rf_name = subj_name + "/" + subj_name + "_incs.dump"
@@ -10,8 +10,8 @@ def get_incs_f(subj_name):
     inco_dict = pickle.load(incs_file)
 
     incs_file.close()
-
-    with open('inconsistencies.csv', 'w') as csvfile:
+    csvf_name = subj_name + "/" + subj_name + "_incs.csv"
+    with open(csvf_name, 'w') as csvfile:
         fieldnames = ['Person', 'Property', 'Type']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
@@ -27,7 +27,7 @@ def get_incs_f(subj_name):
 
 
 if __name__ == '__main__':
-    get_incs_f("try_incs.dump")
+    
 
     subjects_f = {'person': "http://dbpedia.org/ontology/Person",
                   'Event': "http://dbpedia.org/ontology/Event",
