@@ -9,9 +9,9 @@ def print_rules_to_csv(subj):
         return
     rules_file = open(rf_name, 'r')
     all_rules = pickle.load(rules_file)
-    good, r60_70, r50_60, weird = all_rules
+    good, r60_70, r50_60, weird , ons= all_rules
     rules_file.close()
-    csv_names = ['good.csv', 'r60_70.csv', 'r50_60.csv', 'weird.csv']
+    csv_names = ['good.csv', 'r60_70.csv', 'r50_60.csv', 'weird.csv', 'ons.csv']
 
     for rd, csvn in zip(all_rules, csv_names):
         csvf_name = subj + "/" + csvn
