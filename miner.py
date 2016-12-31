@@ -152,10 +152,10 @@ class miner():
                         rules50_60.append(data)
                 else:
                     rules_wierd.append(data)
-
-            p_once_ratio = float(p_only_one)/p_count
-            if  p_once_ratio > 0.9:
-                one_of_a_kind[p] = p_once_ratio
+            if p_count > 0:
+                p_once_ratio = float(p_only_one)/p_count
+                if  p_once_ratio > 0.9:
+                    one_of_a_kind[p] = p_once_ratio
 
             txt = "\b Properties progress:{} / {} ".format(progress, p_size)
             sys.stdout.write(txt)
