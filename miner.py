@@ -86,6 +86,33 @@ class miner():
 
 
 
+    def mine_relation_rules(self, quick, min_pos_th=0.2, positive_total_ratio_th=0.8):
+        print "mining relation_rules for {}".format(self.subject)
+        s_dump_name = self.subject + "/" + self.subject + "_top.dump"
+        p_dump_name = self.subject + "/" + self.subject + "_prop.dump"
+        # get the 100 most popular properties for type person in dbp
+        p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
+        s_dict = self.get_s_dict_from_dump(s_dump_name)
+        rules70_ = []
+        rules60_70 = []
+        rules50_60 = []
+        rules_wierd = []
+        one_of_a_kind = {}
+        progress = 0
+        p_size = len(p_dict)
+        t0 = time.time()
+        pttr_dict = {}
+        for p in p_dict:
+            #is list of types for every s and p
+            spt_tuples = get_spts()
+
+            spttr_dict = get_ttrs()
+
+
+
+
+
+
 
     def mine_rules(self, quick, min_pos_th=0.2, positive_total_ratio_th=0.8):
         print "mining rules for {}".format(self.subject)
@@ -164,7 +191,7 @@ class miner():
 
 
 
-        all_rules_list = (rules70_,rules60_70, rules50_60 ,rules_wierd, one_of_a_kind)
+        all_rules_list = (rules70_ ,rules60_70, rules50_60 ,rules_wierd, one_of_a_kind)
 
         dir_name = self.subject
         if not os.path.exists(dir_name):
