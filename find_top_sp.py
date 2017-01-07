@@ -115,12 +115,12 @@ def get_all_p_dict(uri, dump_name,dir_name):
 
 if __name__ == '__main__':
 
-    subjects = {#'person': "http://dbpedia.org/ontology/Person",
+    subjects = {'personn': "http://dbpedia.org/ontology/Person",
                 'politician': "http://dbpedia.org/ontology/Politician",
                 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
                 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
                 'comedian': "http://dbpedia.org/ontology/Comedian",
-                'ArchitecturalStructure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
+                'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
 
 
 
