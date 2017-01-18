@@ -115,13 +115,19 @@ def get_all_p_dict(uri, dump_name,dir_name):
 
 if __name__ == '__main__':
 
-    subjects = {'personn': "http://dbpedia.org/ontology/Person",
+    subjectsPerson = {#'personn': "http://dbpedia.org/ontology/Person",
                 'politician': "http://dbpedia.org/ontology/Politician",
                 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
                 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
                 'comedian': "http://dbpedia.org/ontology/Comedian",
                 'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
-
+    
+    subjectsPlaces = {#Place': "http://dbpedia.org/ontology/Person",
+                'ArchitecturalStructure': "http://dbpedia.org/ontology/ArchitecturalStructure",
+                'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
+                'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
+                'comedian': "http://dbpedia.org/ontology/Comedian",
+                'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
 
 
     #subjects = {'person': "http://dbpedia.org/ontology/Person",
@@ -138,8 +144,8 @@ if __name__ == '__main__':
     for s,uri in subjects.items():
         f = s + "_top.dump"
         pn = s + "_prop.dump"
-        #get_all_top_of(uri ,f, s)
-        get_all_p_dict(uri, pn, s)
+        get_all_top_of(uri ,f, s)
+        #get_all_p_dict(uri, pn, s)
 
 
 

@@ -1,4 +1,4 @@
-import pickle
+﻿import pickle
 from SPARQLWrapper import SPARQLWrapper, JSON
 import sys
 import os
@@ -23,7 +23,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
         all_rules = pickle.load(rules_file)
         (rules, r_67, r_56,r4) = all_rules
         rules_file.close()
-    print "find inconsistencies, number of rules: {} ".format(len(rules))
+    print "find inconsistencies, number of rules: {} ".format(str(len(rules)))
     i = 0
     inco_dict = {}
     for r in rules:
