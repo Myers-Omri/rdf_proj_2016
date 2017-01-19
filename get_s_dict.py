@@ -1,4 +1,4 @@
-﻿import pickle
+import pickle
 import os
 import csv
 
@@ -90,3 +90,4 @@ if __name__ == '__main__':
 
     for s, suri in ssubjects.items():
         get_subj_from_dump(s)
+        

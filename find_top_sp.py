@@ -1,4 +1,4 @@
-﻿from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper, JSON
 import os
 import pickle
 import sys
@@ -144,8 +144,8 @@ if __name__ == '__main__':
     for s,uri in subjectsPerson.items():
         f = s + "_top.dump"
         pn = s + "_prop.dump"
-        get_all_top_of(uri ,f, s)
-        #get_all_p_dict(uri, pn, s)
+        #get_all_top_of(uri ,f, s)
+        get_all_p_dict(uri, pn, s)
 
 
 

@@ -33,9 +33,24 @@ if __name__ == '__main__':
                 'Software': "http://dbpedia.org/ontology/Software"}
     subjects0 = {'person': "http://dbpedia.org/ontology/Person"}
 
-    for s, suri in subjects.items():
-        mm = miner(db, s, suri)
-        all_rules = mm.mine_rules(quick, min_pos_th, positive_total_ratio_th)
+
+    subjectsPerson = {#'personn': "http://dbpedia.org/ontology/Person",
+                'politician': "http://dbpedia.org/ontology/Politician",
+                'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
+                'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
+                'comedian': "http://dbpedia.org/ontology/Comedian",
+                'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
+                
+                
+    for s, suri in subjectsPerson.items():
+        try:
+            mm = miner(db, s, suri)
+            all_rules = mm.mine_rules(quick, min_pos_th, positive_total_ratio_th)
+            print "finished mining for: " + s
+        except:
+            print "problem in:" + s
+            continue
+    
 
     # for s, suri in subjects0.items():
     #

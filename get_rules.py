@@ -20,6 +20,13 @@ def print_rules_to_csv(subj):
             writer = csv.DictWriter(csvfile1, fieldnames=fieldnames)
 
             writer.writeheader()
+            if csvn == 'ons.csv':
+                for r, rt in rd.items():
+                    prop = r.encode('utf-8')
+                    pos = float(rt)
+                    data = {'Property': prop, 'Type': "", 'Ratio': pos, 'support': ""}
+                    writer.writerow(data)
+                continue
             for r in rd:
                 prop = (r['p']).encode('utf-8')
                 typet = (r['t']).encode('utf-8')
@@ -56,7 +63,17 @@ if __name__ == '__main__':
                 'Software': "http://dbpedia.org/ontology/Software"}
     subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
     
-    for s, suri in subjects_f.items():
+    subjectsPerson = {#'personn': "http://dbpedia.org/ontology/Person",
+                'politician': "http://dbpedia.org/ontology/Politician",
+                'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
+                'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
+                'comedian': "http://dbpedia.org/ontology/Comedian",
+                'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
+                
+    
+    
+    
+    for s, suri in subjectsPerson.items():
        
        
         print_rules_to_csv(s)
