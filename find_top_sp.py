@@ -30,7 +30,7 @@ def get_top_1_percent(i, top_s_dict,uri):
                     OFFSET %s
                 }
                 ?s ?p ?o.
-                FILTER regex(?p, "^http://dbpedia.org/", "i")
+                FILTER regex(?p, "^http://dbpedia.org/property/", "i")
             }
         }
     } GROUP BY ?s
@@ -83,14 +83,14 @@ def get_all_p_dict(uri, dump_name,dir_name):
     query_text = ("""
             SELECT ?p (COUNT (?p) AS ?cnt)
             WHERE {
-                {
-                SELECT DISTINCT ?s
-                WHERE {
-                    ?s a <%s>.
+                    {
+                    SELECT DISTINCT ?s ?p
+                    WHERE {
+                        ?s a <%s>;
+                            ?p ?o
+                    FILTER regex(?p, "^http://dbpedia.org/property/", "i")
                 }LIMIT 500000
-                }
-                ?s ?p ?o
-                FILTER regex(?p, "^http://dbpedia.org/", "i")
+            }
             }GROUP BY ?p
              ORDER BY DESC(?cnt)
              LIMIT 20
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     #            'Software': "http://dbpedia.org/ontology/Software",
     #            'Play': "http://dbpedia.org/ontology/Play"}
 
-    for s,uri in subjects.items():
+    for s,uri in subjectsPerson.items():
         f = s + "_top.dump"
         pn = s + "_prop.dump"
         get_all_top_of(uri ,f, s)
