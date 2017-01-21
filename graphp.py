@@ -1,17 +1,6 @@
 
 import http_server
-import pickle
-import sys
-import os
-import time
-import matplotlib.pyplot as plt
-import networkx as nx
-import sys
 
-import SimpleHTTPServer, BaseHTTPServer
-import socket
-import thread
-import webbrowser
 import json
 import networkx as nx
 from networkx.readwrite import json_graph
