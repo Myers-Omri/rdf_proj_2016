@@ -85,7 +85,7 @@ class SubjectGraph():
             tn = to_type + '@' + at_prop
             if fn in types and tn in types:
                 if self.graph.has_edge(fn,tn, relatio_uri):
-                    self.graph[fn][tn]['support'] +=1
+                    self.graph[fn][tn][relatio_uri]['support'] += 1
                 else:
                     self.graph.add_edge(fn, tn, key=relatio_uri, attr_dict={ 'support': 1 })
 
