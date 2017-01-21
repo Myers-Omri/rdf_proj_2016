@@ -4,7 +4,7 @@ import pickle
 import sys
 import os
 import time
-
+import graphp
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
@@ -17,7 +17,7 @@ class miner():
         self.subject = subj
         self.subject_uri = s_uri
         self.sparql = SPARQLWrapper(kb)
-
+        self.RG = graphp.SubjectGraph(s_uri)
 
     def get_ot_unique_dict(self, o_list, o_dict_t):
         res_dict = {}
@@ -69,8 +69,8 @@ class miner():
             self.sparql.setQuery("""
                                 SELECT  DISTINCT  ?c
                                 WHERE{
-                                    <%s>  <http://dbpedia.org/ontology/type>   ?c .
-                                    FILTER regex(?c, "^http://dbpedia.org", "i")
+                                    <%s>  a   ?c .
+                                    FILTER regex(?c, "^http://dbpedia.org/ontology", "i")
                                 }
                             """ % o)
 
@@ -87,26 +87,70 @@ class miner():
 
 
     def mine_relation_rules(self, quick, min_pos_th=0.2, positive_total_ratio_th=0.8):
-        print "mining relation_rules for {}".format(self.subject)
-        s_dump_name = self.subject + "/" + self.subject + "_top.dump"
-        p_dump_name = self.subject + "/" + self.subject + "_prop.dump"
-        # get the 100 most popular properties for type person in dbp
-        p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
-        s_dict = self.get_s_dict_from_dump(s_dump_name)
-        rules70_ = []
-        rules60_70 = []
-        rules50_60 = []
-        rules_wierd = []
-        one_of_a_kind = {}
-        progress = 0
-        p_size = len(p_dict)
-        t0 = time.time()
-        pttr_dict = {}
-        for p in p_dict:
-            #is list of types for every s and p
-            spt_tuples = get_spts()
+        pass
+        # print "mining relation_rules for {}".format(self.subject)
+        # s_dump_name = self.subject + "/" + self.subject + "_top.dump"
+        # p_dump_name = self.subject + "/" + self.subject + "_prop.dump"
+        # # get the 100 most popular properties for type person in dbp
+        # p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
+        # s_dict = self.get_s_dict_from_dump(s_dump_name)
+        # rules70_ = []
+        # rules60_70 = []
+        # rules50_60 = []
+        # rules_wierd = []
+        # one_of_a_kind = {}
+        # progress = 0
+        # p_size = len(p_dict)
+        # t0 = time.time()
+        # pttr_dict = {}
+        # for p in p_dict:
+        #     #is list of types for every s and p
+        #     spt_tuples = get_spts()
+        #
+        #     spttr_dict = get_ttrs()
 
-            spttr_dict = get_ttrs()
+
+
+
+
+    def update_graph(self,s, p , t_dict):
+        for t in t_dict:
+            self.RG.add_type_to_prop(p,t)
+
+        query_text = ("""
+                        SELECT distinct  ?t1 ?r12 ?r21 ?t2
+                        WHERE {
+                        <%s> <%s> ?o1;
+                              <%s> ?o2.
+                        FILTER (?o1 < ?o2).
+                        ?o1 a ?t1.
+                        ?o2 a ?t2.
+                        ?o1 ?r12 ?o2.
+                        ?o2 ?r21 ?o1.
+
+                        FILTER (regex(?t1, "^http://dbpedia.org/ontology", "i") && (!regex(?t1, "[#]", "i"))).
+                        FILTER (regex(?t2, "^http://dbpedia.org/ontology", "i") && (!regex(?t2, "[#]", "i")))
+
+                        FILTER regex(?r12, "^http://dbpedia.org/ontology", "i").
+                        FILTER regex(?r21, "^http://dbpedia.org/ontology", "i").
+                        FILTER (?t1 != ?t2).
+                    }""" % (s, p, p))
+
+        # I figured out that a good filter for the type of the object has to  be of "^http://dbpedia.org/ontology"
+        # in oreder to get valuable results
+        self.sparql.setQuery(query_text)
+        self.sparql.setReturnFormat(JSON)
+        results_inner = self.sparql.query().convert()
+        for inner_res in results_inner["results"]["bindings"]:
+            t1 = inner_res["t1"]["value"]
+            t2 = inner_res["t2"]["value"]
+            r12 = inner_res["r12"]["value"]
+            r21 = inner_res["r21"]["value"]
+
+            self.RG.add_relation(t1,t2,p,r12)
+            self.RG.add_relation(t2,t1,p,r21)
+
+
 
 
 
@@ -140,18 +184,20 @@ class miner():
             # for every person in the list (2000 in total)
             p_only_one = 0
             for i,s  in enumerate(s_dict):
+                self.RG.add_prop(p)
                 o_list = self.update_so_dict(p, s)
                 if o_list:
                     p_count += 1
+                ot_dict = self.get_os(o_list)
+                t_dict = self.get_ot_unique_dict(o_list, ot_dict)  # Done: for specific person and property find the unique types!
                 if len(o_list) > 1:
                     #ot_dict is list of types for every o in the list for specific person and property
-                    ot_dict = self.get_os(o_list)
-                    t_dict = self.get_ot_unique_dict(o_list, ot_dict) #Done: for specific person and property find the unique types!
+
                     self.update_pt(t_dict,p_unique_t_dict) #Done: add up the times that t was unique for the specific p
                 elif len(o_list) == 1:
                     p_only_one += 1
 
-
+                self.update_graph(s, p , t_dict)
 
                 txt = "\b S loop progress: {}".format(i)
                 sys.stdout.write(txt)
@@ -302,17 +348,17 @@ class miner():
 
 if __name__ == '__main__':
     quick = True
-    choice = raw_input("quick or full")
-    if choice == "full":
-        quick = False
+    # choice = raw_input("quick or full")
+    # if choice == "full":
+    #     quick = False
 
     db = DBPEDIA_URL
-    choice = raw_input("dbpedia or small")
-    if choice == "small":
-        db = SMAL_URL
+    # choice = raw_input("dbpedia or small")
+    # if choice == "small":
+    #     db = SMAL_URL
 
-    min_pos_th = float(raw_input("enter the th weird rules \n"))
-    positive_total_ratio_th = float(raw_input("enter the th for good rules rules \n"))
+    # min_pos_th = float(raw_input("enter the th weird rules \n"))
+    # positive_total_ratio_th = float(raw_input("enter the th for good rules rules \n"))
 
     subjectsf = {'person': "http://dbpedia.org/ontology/Person",
                 'Event': "http://dbpedia.org/ontology/Event",
@@ -330,8 +376,16 @@ if __name__ == '__main__':
                 # 'Animal': "http://dbpedia.org/ontology/Animal",
                 # 'Mammal': "http://dbpedia.org/ontology/Mammal",
                 'Software': "http://dbpedia.org/ontology/Software"}
-
+    subjectsPerson = {  # 'personn': "http://dbpedia.org/ontology/Person",
+        # 'politician': "http://dbpedia.org/ontology/Politician",
+        # 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
+        # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
+        'comedian': "http://dbpedia.org/ontology/Comedian"}
+        # 'architectural_structure': "http://dbpedia.org/ontology/ArchitecturalStructure"}
     for s, suri in subjects.items():
         mm = miner(db,s, suri)
-        all_rules = mm.mine_rules( quick,  min_pos_th, positive_total_ratio_th)
-
+        all_rules = mm.mine_rules( quick,  min_pos_th=0.2, positive_total_ratio_th=0.8)
+        GG = mm.RG
+        g_file = open('pg.dump', 'w')
+        pickle.dump(GG, g_file)
+        g_file.close()
