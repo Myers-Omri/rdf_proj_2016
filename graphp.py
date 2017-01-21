@@ -50,10 +50,10 @@ class SubjectGraph():
             logging.info('prop not in graph: ' + prop_uri)
             return
 
-
-        if new_type not in self.graph:
+        new_type_p = new_type + '@' + prop_uri
+        if new_type_p not in self.graph:
             type_node = TypeNode(new_type, prop_uri)
-            new_type_p = new_type + '@' + prop_uri
+
             self.graph.add_node(new_type_p, obj=type_node)
             # self.graph[new_prop]['object'] = prop_node
             self.graph.add_edge(prop_uri, new_type_p)
