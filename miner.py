@@ -382,7 +382,7 @@ if __name__ == '__main__':
         # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
         'comedian': "http://dbpedia.org/ontology/Comedian"}
         # 'architectural_structure': "http://dbpedia.org/ontology/ArchitecturalStructure"}
-    for s, suri in subjects.items():
+    for s, suri in subjectsPerson.items():
         mm = miner(db,s, suri)
         all_rules = mm.mine_rules( quick,  min_pos_th=0.2, positive_total_ratio_th=0.8)
         GG = mm.RG
