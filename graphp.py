@@ -13,6 +13,8 @@ class SubjectGraph():
         self.uri = new_uri
         self.graph = nx.MultiDiGraph()
         self.graph.add_node(self.uri)
+        self.type_dict = {}
+        self.rel_dict = {}
         #self.grph_objs = {}
 
         #self.prop_objects = {}
@@ -33,18 +35,31 @@ class SubjectGraph():
         self.graph.node[new_prop]['obj'].support += 1
         logging.info('prop was updated: ' + new_prop)
 
-    def normalize_graph(self, totals):
+    def normalize_graph(self, totals, unis, singles):
         # divide every atribute of the support with the number at totals
-        for tnode in self.graph.nodes(data=True):
-            sup = self.graph[tnode]['obj'].support
-            self.graph[tnode]['obj'].ratio = float(sup) / totals
+        for tnode, dat in self.graph.nodes(data=True):
+            if tnode == self.uri:
+                continue
+            if 'obj' in dat:
+
+                dat['obj'].norm(totals)
+            if tnode in unis:
+                dat['obj'].is_unique = True
+            if tnode in singles:
+                dat['obj'].is_single = True
+
+        for eg in self.rel_dict:
+            fn, tn , uri = eg
+            ratio = self.graph[fn][tn][uri]['support']
+            self.graph[fn][tn][uri]['support'] = float(ratio) / totals
 
 
+    def reset_types(self):
+        for t in self.type_dict:
+            self.type_dict[t] = False
 
-    def update_prop(self, prop_key, args):
-        pass
 
-    def add_type_to_prop(self, prop_uri, new_type):
+    def add_type_to_prop(self, prop_uri, new_type, uniq):
         # add new type if type found adds 1 to support
         if prop_uri not in self.graph:
             logging.info('prop not in graph: ' + prop_uri)
@@ -52,6 +67,7 @@ class SubjectGraph():
 
         new_type_p = new_type + '@' + prop_uri
         if new_type_p not in self.graph:
+            self.type_dict[new_type_p] = False
             type_node = TypeNode(new_type, prop_uri)
 
             self.graph.add_node(new_type_p, obj=type_node)
@@ -59,6 +75,8 @@ class SubjectGraph():
             self.graph.add_edge(prop_uri, new_type_p)
 
         self.graph.node[new_type_p]['obj'].support += 1
+        if uniq:
+            self.graph.node[new_type_p]['obj'].uniques += 1
         # if self.grph_objs[new_type].checked:
         #     self.grph_objs[new_type].is_unique = False
         #
@@ -88,6 +106,7 @@ class SubjectGraph():
                     self.graph[fn][tn][relatio_uri]['support'] += 1
                 else:
                     self.graph.add_edge(fn, tn, key=relatio_uri, attr_dict={ 'support': 1 })
+                    self.rel_dict[(fn, tn, relatio_uri)] = False
 
 
                 logging.info('relation added at: ' + fn + ';' + tn + ';' + relatio_uri)
@@ -97,6 +116,62 @@ class SubjectGraph():
     def update_relation(self):
         pass
 
+
+
+def evaluate_selection(rule_graph, sub_graph):
+
+    xdiff = 0
+    diff = 0
+    max_ratio = 0
+    for t in sub_graph.type_dict:
+        if t in rule_graph.type_dict:
+            curr_ratio = rule_graph.graph.node[t]['obj'].ratio
+            diff += abs( curr_ratio - sub_graph.graph.node[t]['obj'].support)
+            if max_ratio < curr_ratio:
+                max_ratio = curr_ratio
+        else:
+            xdiff += 1
+
+    xdiff *= max_ratio
+
+    max_ratio = 0
+    xrdiff = 0
+    rdiff = 0
+    for r in sub_graph.rel_dict:
+        if r in rule_graph.rel_dict:
+            curr_ratio = rule_graph.graph.node[r]['obj'].ratio
+            rdiff += abs(curr_ratio - sub_graph.graph.node[r]['obj'].support)
+            if max_ratio < curr_ratio:
+                max_ratio = curr_ratio
+        else:
+            xrdiff += 1
+
+    xrdiff *= max_ratio
+
+    total_diff = xdiff + diff + xrdiff + rdiff
+
+    return total_diff
+
+
+
+
+
+def normalize_graph(G, totals, unis, singles):
+    # divide every atribute of the support with the number at totals
+    for tnode, dat in G.graph.nodes(data=True):
+        if tnode == G.uri:
+            continue
+        if 'obj' in dat:
+            dat['obj'].norm(totals)
+        if tnode in unis:
+            dat['obj'].is_unique = True
+        if tnode in singles:
+            dat['obj'].is_single = True
+
+    for eg in G.rel_dict:
+        fn, tn, uri = eg
+        ratio = G.graph[fn][tn][uri]['support']
+        G.graph[fn][tn][uri]['support'] = float(ratio) / totals
 
 class GraphObject():
     def __init__(self, new_uri):
@@ -108,11 +183,16 @@ class GraphObject():
     def __str__(self):
         return self.title
 
+    def norm(self,tot):
+
+        self.ratio = float(self.ratio) / tot
+
 
 class PropertyNode(GraphObject):
 
     def __init__(self, new_uri):
         GraphObject.__init__(self, new_uri)
+        self.is_single = False
 
     def __hash__(self):
         return hash(self.uri)
@@ -125,7 +205,8 @@ class TypeNode(GraphObject):
 
     def __init__(self, new_uri, parent_prop):
         GraphObject.__init__(self, new_uri)
-        self.is_unique = True
+        self.is_unique = False
+
         self.checked = False
         self.uniques = 0
         self.prop_uri = parent_prop
@@ -133,7 +214,10 @@ class TypeNode(GraphObject):
     def __hash__(self):
         return hash(self.uri + '@' +self.prop_uri)
 
+    def norm(self, tot):
+        self.ratio = float(self.ratio) / tot
 
+        self.uniques = float(self.uniques) / tot
 
     def uniqueness(self):
         return  1 if self.is_unique else 0
@@ -179,8 +263,13 @@ if __name__ == '__main__':
     ng.add_prop("placeOfDeath")
     ng.add_type_to_prop("placeOfDeath", "City")
     ng.add_type_to_prop("placeOfDeath", "Country")
-    #ng.add_type_to_prop("http://dbpedia.org/property/dateOfBirth", "april,13 1989")
+    ng.add_type_to_prop("dateOfBirth", "date")
     ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    tots = 2
+    uni = {'City'}
+    singlet = {'dateOfBirth'}
+    ng.normalize_graph(tots, uni, singlet)
+
     G = ng.graph
     p1 = G.nodes()
     # this d3 example uses the name attribute for the mouse-hover value,

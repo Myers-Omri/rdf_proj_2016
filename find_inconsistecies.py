@@ -2,7 +2,8 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 import sys
 import os
-
+from miner import miner
+from graphp import evaluate_selection
 
 DBPEDIA_URL = "http://dbpedia.org/sparql"
 
@@ -68,7 +69,56 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     inc_file.close()
     return inco_dict
 
+def get_subjects(uri, i):
+    sparql = SPARQLWrapper(DBPEDIA_URL)
+    top_s_dict = {}
+    limit = 9999
+    offset = i * limit
 
+    slimit = str(limit)
+    soffset = str(offset)
+    query_text = ("""
+                    SELECT DISTINCT ?s
+                       WHERE
+                       {
+                           ?s a <%s>.
+                       } LIMIT %s
+                       OFFSET %s
+
+                   """ % (uri, slimit, soffset))
+
+    sparql.setQuery(query_text)
+    sparql.setReturnFormat(JSON)
+    results_inner = sparql.query().convert()
+    all_dict = results_inner["results"]["bindings"]
+    for inner_res in all_dict:
+        s = inner_res["s"]["value"]
+        top_s_dict[s] = {}
+    if len(all_dict) > 10:
+        return top_s_dict ,True
+    return top_s_dict, False
+
+
+
+def fix_graphic(db, s_uri, subj,r_graph, load=True):
+    mm = miner(db,subj, s_uri)
+    i = 0
+    cont = True
+    ranks = {}
+    while cont:
+        subs, cont = get_subjects(s_uri, i)
+        i+=1
+        for s in subs:
+            sg = mm.get_sub_graph(s)
+            diff_evaluation = evaluate_selection(r_graph, sg)
+            ranks[s] = diff_evaluation
+
+    if not os.path.exists(subj):
+        os.makedirs(subj)
+    dump_name = subj + "_Gincs.dump"
+    inc_file = open(subj + "/" + dump_name, 'w')
+    pickle.dump(ranks, inc_file)
+    inc_file.close()
 
 
 if __name__ == '__main__':

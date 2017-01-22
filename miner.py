@@ -114,8 +114,8 @@ class miner():
 
 
     def update_graph(self,s, p , t_dict):
-        for t in t_dict:
-            self.RG.add_type_to_prop(p,t)
+        for t, u in t_dict.items():
+            self.RG.add_type_to_prop(p, t, u)
 
         query_text = ("""
                         SELECT distinct  ?t1 ?r12 ?r21 ?t2
@@ -154,8 +154,22 @@ class miner():
 
 
 
+    def get_sub_graph(self, s):
+        p_dump_name = self.subject + "/" + self.subject + "_prop.dump"
+        # get the 100 most popular properties for type person in dbp
+        p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
+        sinles = {}
+        for p in p_dict:
+            self.RG.add_prop(p)
+            o_list = self.update_so_dict(p, s)
+            ot_dict = self.get_os(o_list)
+            t_dict = self.get_ot_unique_dict(o_list,
+                                             ot_dict)  # Done: for specific person and property find the unique types!
+            if len(o_list) == 1:
+                sinles[p] = 1
+            self.update_graph(s, p, t_dict)
 
-
+        self.RG.normalize_graph(1, {}, sinles)
 
 
     def mine_rules(self, quick, min_pos_th=0.2, positive_total_ratio_th=0.8):
@@ -165,7 +179,7 @@ class miner():
         # get the 100 most popular properties for type person in dbp
         p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
         s_dict = self.get_s_dict_from_dump(s_dump_name)
-        rules70_ = []
+        rules70_ = {}
         rules60_70 = []
         rules50_60= []
         rules_wierd = []
@@ -215,20 +229,26 @@ class miner():
                 pos = float(counts['pos'])
                 tot = float(counts['tot'])
                 data = {'p': p, 't': t, 'pos': pos, 'tot': tot}
-                #if (tot/max_totals) >= min_pos_th:
-                if (tot >= min_pos_th):
+                if tot != 0:
+                    data['ratio'] = pos / tot
+                t_key = t + '@' + p
+                if (tot/p_count) >= min_pos_th:
+                #if (tot >= min_pos_th):
                     if ((pos /tot) >= positive_total_ratio_th) :
-                        rules70_.append(data)
+                        rules70_[t_key](data)
                     elif((pos /tot) >= 0.6):
                         rules60_70.append(data)
                     elif((pos /tot) >= 0.5):
                         rules50_60.append(data)
                 else:
                     rules_wierd.append(data)
+
             if p_count > 0:
                 p_once_ratio = float(p_only_one)/p_count
                 if  p_once_ratio > 0.9:
                     one_of_a_kind[p] = p_once_ratio
+
+            self.RG.norma_uni_single(len(s_dict), rules70_, one_of_a_kind)
 
             txt = "\b Properties progress:{} / {} ".format(progress, p_size)
             sys.stdout.write(txt)
@@ -377,7 +397,7 @@ if __name__ == '__main__':
                 # 'Mammal': "http://dbpedia.org/ontology/Mammal",
                 'Software': "http://dbpedia.org/ontology/Software"}
     subjectsPerson = {  # 'personn': "http://dbpedia.org/ontology/Person",
-        # 'politician': "http://dbpedia.org/ontology/Politician",
+        'politician': "http://dbpedia.org/ontology/Politician",
         # 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
         # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
         'comedian': "http://dbpedia.org/ontology/Comedian"}
@@ -386,6 +406,7 @@ if __name__ == '__main__':
         mm = miner(db,s, suri)
         all_rules = mm.mine_rules( quick,  min_pos_th=0.2, positive_total_ratio_th=0.8)
         GG = mm.RG
-        g_file = open('pg.dump', 'w')
+        dump_name = s + "/" + s + "_pg.dump"
+        g_file = open(dump_name, 'w')
         pickle.dump(GG, g_file)
         g_file.close()
