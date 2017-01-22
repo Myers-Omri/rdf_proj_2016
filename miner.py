@@ -237,7 +237,7 @@ class miner():
                 if (tot/p_count) >= min_pos_th:
                 #if (tot >= min_pos_th):
                     if ((pos /tot) >= positive_total_ratio_th) :
-                        rules70_[t_key](data)
+                        rules70_[t_key] = data
                     elif((pos /tot) >= 0.6):
                         rules60_70.append(data)
                     elif((pos /tot) >= 0.5):
