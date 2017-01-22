@@ -156,10 +156,8 @@ class miner():
 
 
 
-    def get_sub_graph(self, s):
-        p_dump_name = self.subject + "/" + self.subject + "_prop.dump"
-        # get the 100 most popular properties for type person in dbp
-        p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
+    def get_sub_graph(self,s, p_dict, quick = False):
+
         sinles = {}
         for p in p_dict:
             self.RG.add_prop(p)
@@ -172,6 +170,7 @@ class miner():
             self.update_graph(s, p, t_dict)
 
         self.RG.normalize_graph(1, {}, sinles)
+        return self.RG
 
 
     def mine_rules(self, quick, min_pos_th=0.2, positive_total_ratio_th=0.8):

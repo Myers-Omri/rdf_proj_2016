@@ -51,7 +51,7 @@ class SubjectGraph():
         for eg in self.rel_dict:
             fn, tn , uri = eg
             ratio = self.graph[fn][tn][uri]['support']
-            self.graph[fn][tn][uri]['support'] = float(ratio) / totals
+            self.graph[fn][tn][uri]['support'] = min(float(ratio) / totals, 1)
 
 
     def reset_types(self):
@@ -137,10 +137,14 @@ def evaluate_selection(rule_graph, sub_graph):
     max_ratio = 0
     xrdiff = 0
     rdiff = 0
+
+
+
     for r in sub_graph.rel_dict:
         if r in rule_graph.rel_dict:
-            curr_ratio = rule_graph.graph.node[r]['obj'].ratio
-            rdiff += abs(curr_ratio - sub_graph.graph.node[r]['obj'].support)
+            fn, tn, relatio_uri = r
+            curr_ratio = rule_graph.graph[fn][tn][relatio_uri]['support']
+            rdiff += abs(curr_ratio - sub_graph.graph[fn][tn][relatio_uri]['support'])
             if max_ratio < curr_ratio:
                 max_ratio = curr_ratio
         else:
@@ -185,7 +189,7 @@ class GraphObject():
 
     def norm(self,tot):
 
-        self.ratio = float(self.ratio) / tot
+        self.ratio = min(float(self.ratio) / tot, 1)
 
 
 class PropertyNode(GraphObject):

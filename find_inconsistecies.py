@@ -12,8 +12,6 @@ try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia
 
 
 def fix_dbpedia(db, rules, s_uri, subj, load=True):
-
-
     rf_name = subj + "/" + subj + "_rules.dump"
     if not os.path.exists(rf_name):
         return
@@ -33,7 +31,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
         t = r['t']
         # count entities that ruin uniqueness
 		# for every property and type we mined before count and find the
-		#violations.
+		# violations.
         query_text = ("""
             SELECT ?s ?cnt
             WHERE {
@@ -74,7 +72,6 @@ def get_subjects(uri, i):
     top_s_dict = {}
     limit = 9999
     offset = i * limit
-
     slimit = str(limit)
     soffset = str(offset)
     query_text = ("""
@@ -100,8 +97,16 @@ def get_subjects(uri, i):
 
 
 
-def fix_graphic(db, s_uri, subj,r_graph, fast=True):
+def fix_graphic(db, r_graph, s_uri, subj, fast=True, load = False):
+
+    if load:
+        r_graph = rules_dict_from_dump(subj + '/' + subj + '_pg.dump')
+
     mm = miner(db,subj, s_uri)
+    p_dump_name = subj + "/" + subj + "_prop.dump"
+    # get the 100 most popular properties for type person in dbp
+    ps = mm.get_p_dict_from_dump(fast, p_dump_name)
+
     i = 0
     cont = True
     ranks = {}
@@ -109,7 +114,7 @@ def fix_graphic(db, s_uri, subj,r_graph, fast=True):
         subs, cont = get_subjects(s_uri, i)
         i+=1
         for s in subs:
-            sg = mm.get_sub_graph(s)
+            sg = mm.get_sub_graph( s, ps, fast)
             diff_evaluation = evaluate_selection(r_graph, sg)
             ranks[s] = diff_evaluation
         if fast:
@@ -120,6 +125,14 @@ def fix_graphic(db, s_uri, subj,r_graph, fast=True):
     inc_file = open(subj + "/" + dump_name, 'w')
     pickle.dump(ranks, inc_file)
     inc_file.close()
+
+
+
+def rules_dict_from_dump(dump_name):
+        r_graph_file = open(dump_name, 'r')
+        p_dict = pickle.load(r_graph_file)
+        r_graph_file.close()
+        return p_dict
 
 
 if __name__ == '__main__':
@@ -142,11 +155,11 @@ if __name__ == '__main__':
     subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
 
     subjectsPerson = {  # 'personn': "http://dbpedia.org/ontology/Person",
-        'politician': "http://dbpedia.org/ontology/Politician",
+        #'politician': "http://dbpedia.org/ontology/Politician",
         # 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
         # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
         'comedian': "http://dbpedia.org/ontology/Comedian"}
     rules = {}
     for s, suri in subjectsPerson.items():
-        fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-
+        # fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
+        fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
