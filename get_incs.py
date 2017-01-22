@@ -41,12 +41,16 @@ if __name__ == '__main__':
                   'Play': "http://dbpedia.org/ontology/Play"}
 
     subjects1 = {'person': "http://dbpedia.org/ontology/Person",
-             'Manga': "http://dbpedia.org/ontology/Manga",
+             'Plant': "http://dbpedia.org/ontology/Plant",
              'Animal': "http://dbpedia.org/ontology/Animal",
              'Mammal': "http://dbpedia.org/ontology/Mammal",
              'Software': "http://dbpedia.org/ontology/Software"}
-    subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
+    subjectsPerson = {  # 'personn': "http://dbpedia.org/ontology/Person",
+        # 'politician': "http://dbpedia.org/ontology/Politician",
+        # 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
+        # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
+        'comedian': "http://dbpedia.org/ontology/Comedian"}
 
-    for s, suri in subjects_f.items():
+    for s, suri in subjectsPerson.items():
         get_incs_f(s)
 

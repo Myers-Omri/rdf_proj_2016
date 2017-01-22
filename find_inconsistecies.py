@@ -20,12 +20,12 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     if load:
         rules_file = open(rf_name, 'r')
         all_rules = pickle.load(rules_file)
-        (rules, r_67, r_56,r4) = all_rules
+        (rules, r_67, r_56,r4, ons) = all_rules
         rules_file.close()
     print "find inconsistencies, number of rules: {} ".format(str(len(rules)))
     i = 0
     inco_dict = {}
-    for r in rules:
+    for key, r in rules.items():
         i+=1
         p = r['p']
         t = r['t']
@@ -38,7 +38,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             {
                 SELECT ?s (COUNT(*) AS ?cnt)
                 WHERE{
-                    ?o <http://dbpedia.org/ontology/type> <%s>.
+                    ?o a <%s>.
                     ?s a <%s>;
                      <%s> ?o .
 
@@ -56,6 +56,33 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             if s not in inco_dict:
                 inco_dict[s] = []
             inco_dict[s].append((p, t))
+
+
+    for p in ons:
+        query_text = ("""
+            SELECT ?s ?cnt
+            WHERE {
+            {
+                SELECT ?s (COUNT(*) AS ?cnt)
+                WHERE{
+                    ?o a ?t .
+                    ?s a <%s>;
+                     <%s> ?o .
+
+                }GROUP BY ?s
+                ORDER BY DESC(?cnt)
+            }
+            FILTER (?cnt > 1)
+            }""" % (s_uri, p))
+        sparql.setQuery(query_text)
+        sparql.setReturnFormat(JSON)
+        results_inner = sparql.query().convert()
+        for inner_res in results_inner["results"]["bindings"]:
+            so = inner_res["s"]["value"]
+
+            if so not in inco_dict:
+                inco_dict[so] = []
+            inco_dict[so].append((p, "***ons***"))
 
     if not os.path.exists(subj):
         os.makedirs(subj)
@@ -161,5 +188,5 @@ if __name__ == '__main__':
         'comedian': "http://dbpedia.org/ontology/Comedian"}
     rules = {}
     for s, suri in subjectsPerson.items():
-        # fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-        fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
+        fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
+        # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)

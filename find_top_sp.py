@@ -2,6 +2,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import os
 import pickle
 import sys
+from threading import Thread
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 
 
@@ -59,10 +60,10 @@ def get_all_top_of(uri , f_name, dir_name):
         i += 1
         flag = get_top_1_percent(i, top_subjects, uri)
 
-        txt = "\b i progress:{} ".format(i)
-        sys.stdout.write(txt)
-        sys.stdout.write("\r")
-        sys.stdout.flush()
+        # txt = "\b i progress:{} ".format(i)
+        # sys.stdout.write(txt)
+        # sys.stdout.write("\r")
+        # sys.stdout.flush()
         if i>150:
             flag = False
 
@@ -71,7 +72,7 @@ def get_all_top_of(uri , f_name, dir_name):
     s_dict_file = open(dir_name + "/" + f_name, 'w')
     pickle.dump(top_subjects, s_dict_file)
     s_dict_file.close()
-    print "get top s  done for {}, i is:{}".format(f_name, i)
+    #print "get top s  done for {}, i is:{}".format(f_name, i)
 
 
 
@@ -106,46 +107,57 @@ def get_all_p_dict(uri, dump_name,dir_name):
 
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
-    p_dict_file = open(s + "/" + dump_name, 'w')
+    p_dict_file = open(dir_name + "/" + dump_name, 'w')
     pickle.dump(p_dict, p_dict_file)
     p_dict_file.close()
-    print "pdict done for: {}".format(dir_name)
+    #print "pdict done for: {}".format(dir_name)
+
+
+def get_ps(uri, s_name ):
+    print "started: " +s_name
+    subjects_fname = s_name + "_top.dump"
+    pprop_fname = s_name + "_prop.dump"
+
+    # get_all_top_of(uri, subjects_fname, s_name)
+    get_all_p_dict(uri, pprop_fname, s_name)
+
+    print "finished: " + s_name
 
 
 
 if __name__ == '__main__':
 
-    subjectsPerson = {#'personn': "http://dbpedia.org/ontology/Person",
+    subjectsPerson = {'person': "http://dbpedia.org/ontology/Person",
                 'politician': "http://dbpedia.org/ontology/Politician",
                 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
                 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
                 'comedian': "http://dbpedia.org/ontology/Comedian",
-                'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
+                      "Company": "http://dbpedia.org/ontology/Company",
+                      "EducationalInstitution":"http://dbpedia.org/ontology/EducationalInstitution"}
     
-    subjectsPlaces = {#Place': "http://dbpedia.org/ontology/Person",
-                'ArchitecturalStructure': "http://dbpedia.org/ontology/ArchitecturalStructure",
-                'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
-                'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
-                'comedian': "http://dbpedia.org/ontology/Comedian",
-                'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
+    subjectsPlaces = {'Place': "http://dbpedia.org/ontology/Place",
+                        'NaturalPlace': "http://dbpedia.org/ontology/NaturalPlace",
+                        'HistoricPlace': "http://dbpedia.org/ontology/HistoricPlace",
+                        'CelestialBody': "http://dbpedia.org/ontology/CelestialBody",
+                      'architectural_structure': "http://dbpedia.org/ontology/ArchitecturalStructure"}
+
+    subjectsLive = {'Animal': "http://dbpedia.org/ontology/Animal",
+               'Plant': "http://dbpedia.org/ontology/Plant",
+               'Insect': "http://dbpedia.org/ontology/Insect",
+               'Fish': "http://dbpedia.org/ontology/Fish",
+               'Mammal': "http://dbpedia.org/ontology/Mammal",
+
+               'Play': "http://dbpedia.org/ontology/Play"}
+
+    dictionaries= [subjectsPerson, subjectsPlaces, subjectsLive]
+
+    for d in dictionaries:
+        for s, uri in d.items():
+            t = Thread(target=get_ps, args=(uri,s,))
+            t.start()
 
 
-    #subjects = {'person': "http://dbpedia.org/ontology/Person",
-    #            'Event': "http://dbpedia.org/ontology/Event",
-    #            'Location': "http://dbpedia.org/ontology/Location",
-    #            'Organisation': "http://dbpedia.org/ontology/Organisation",
-    #            'Manga': "http://dbpedia.org/ontology/Manga",
-    #            'Animal': "http://dbpedia.org/ontology/Animal",
-    #            'Mammal': "http://dbpedia.org/ontology/Mammal",
-    #            'Eukaryote': "http://dbpedia.org/ontology/Eukaryote",
-    #            'Software': "http://dbpedia.org/ontology/Software",
-    #            'Play': "http://dbpedia.org/ontology/Play"}
 
-    for s,uri in subjectsPerson.items():
-        f = s + "_top.dump"
-        pn = s + "_prop.dump"
-        #get_all_top_of(uri ,f, s)
-        get_all_p_dict(uri, pn, s)
 
 
 
