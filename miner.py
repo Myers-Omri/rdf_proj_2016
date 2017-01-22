@@ -1,5 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-from find_inconsistecies import fix_dbpedia, fix_graphic
+
 import pickle
 import sys
 import os
@@ -250,7 +250,7 @@ class miner():
                 if  p_once_ratio > 0.9:
                     one_of_a_kind[p] = p_once_ratio
 
-            self.RG.norma_uni_single(len(s_dict), rules70_, one_of_a_kind)
+            self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind)
 
             txt = "\b Properties progress:{} / {} ".format(progress, p_size)
             sys.stdout.write(txt)
@@ -369,6 +369,7 @@ class miner():
 
 
 if __name__ == '__main__':
+    from find_inconsistecies import fix_graphic
     quick = True
     # choice = raw_input("quick or full")
     # if choice == "full":
