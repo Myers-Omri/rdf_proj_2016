@@ -153,9 +153,9 @@ class miner():
         p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
         s_dict = self.get_s_dict_from_dump(s_dump_name)
         rules70_ = {}
-        rules60_70 = []
-        rules50_60= []
-        rules_wierd = []
+        rules60_70 = {}
+        rules50_60= {}
+        rules_wierd = {}
         one_of_a_kind = {}
         progress = 0
         p_size = len(p_dict)
@@ -341,7 +341,7 @@ class miner():
 
 if __name__ == '__main__':
     from find_inconsistecies import fix_graphic
-    quick = True
+    quick = False
     # choice = raw_input("quick or full")
     # if choice == "full":
     #     quick = False
