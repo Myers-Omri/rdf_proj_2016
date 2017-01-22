@@ -27,7 +27,7 @@ def print_rules_to_csv(subj):
                     data = {'Property': prop, 'Type': "", 'Ratio': pos, 'support': ""}
                     writer.writerow(data)
                 continue
-            for r in rd:
+            for k, r in rd.items():
                 prop = (r['p']).encode('utf-8')
                 typet = (r['t']).encode('utf-8')
                 pos = float(r['pos'])

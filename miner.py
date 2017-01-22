@@ -87,34 +87,6 @@ class miner():
         return o_dict
 
 
-
-    def mine_relation_rules(self, quick, min_pos_th=0.2, positive_total_ratio_th=0.8):
-        pass
-        # print "mining relation_rules for {}".format(self.subject)
-        # s_dump_name = self.subject + "/" + self.subject + "_top.dump"
-        # p_dump_name = self.subject + "/" + self.subject + "_prop.dump"
-        # # get the 100 most popular properties for type person in dbp
-        # p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
-        # s_dict = self.get_s_dict_from_dump(s_dump_name)
-        # rules70_ = []
-        # rules60_70 = []
-        # rules50_60 = []
-        # rules_wierd = []
-        # one_of_a_kind = {}
-        # progress = 0
-        # p_size = len(p_dict)
-        # t0 = time.time()
-        # pttr_dict = {}
-        # for p in p_dict:
-        #     #is list of types for every s and p
-        #     spt_tuples = get_spts()
-        #
-        #     spttr_dict = get_ttrs()
-
-
-
-
-
     def update_graph(self,s, p , t_dict):
         for t, u in t_dict.items():
             self.RG.add_type_to_prop(p, t, u)
@@ -238,11 +210,11 @@ class miner():
                     if ((pos /tot) >= positive_total_ratio_th) :
                         rules70_[t_key] = data
                     elif((pos /tot) >= 0.6):
-                        rules60_70.append(data)
+                        rules60_70[t_key] = data
                     elif((pos /tot) >= 0.5):
-                        rules50_60.append(data)
+                        rules50_60[t_key] = data
                 else:
-                    rules_wierd.append(data)
+                    rules_wierd[t_key] = data
 
             if p_count > 0:
                 p_once_ratio = float(p_only_one)/p_count
