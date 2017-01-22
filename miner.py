@@ -371,7 +371,7 @@ if __name__ == '__main__':
                 # 'Mammal': "http://dbpedia.org/ontology/Mammal",
                 'Software': "http://dbpedia.org/ontology/Software"}
     subjectsPerson = {  # 'personn': "http://dbpedia.org/ontology/Person",
-        'politician': "http://dbpedia.org/ontology/Politician",
+        # 'politician': "http://dbpedia.org/ontology/Politician",
         # 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
         # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
         'comedian': "http://dbpedia.org/ontology/Comedian"}
