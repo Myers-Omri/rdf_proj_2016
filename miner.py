@@ -413,6 +413,6 @@ if __name__ == '__main__':
         pickle.dump(GG, g_file)
         g_file.close()
         try:
-            fix_graphic(db,s, suri, GG)
+            fix_graphic(db, GG, suri, s, fast=True, load=False)
         except:
             print "got a problem at: " + s
