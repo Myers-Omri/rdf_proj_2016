@@ -1,10 +1,12 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
-from find_inconsistecies import fix_dbpedia
+from find_inconsistecies import fix_dbpedia, fix_graphic
 import pickle
 import sys
 import os
 import time
 import graphp
+
+
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
@@ -410,3 +412,7 @@ if __name__ == '__main__':
         g_file = open(dump_name, 'w')
         pickle.dump(GG, g_file)
         g_file.close()
+        try:
+            fix_graphic(db,s, suri, GG)
+        except:
+            print "got a problem at: " + s

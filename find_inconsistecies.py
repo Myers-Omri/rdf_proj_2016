@@ -100,7 +100,7 @@ def get_subjects(uri, i):
 
 
 
-def fix_graphic(db, s_uri, subj,r_graph, load=True):
+def fix_graphic(db, s_uri, subj,r_graph, fast=True):
     mm = miner(db,subj, s_uri)
     i = 0
     cont = True
@@ -112,7 +112,8 @@ def fix_graphic(db, s_uri, subj,r_graph, load=True):
             sg = mm.get_sub_graph(s)
             diff_evaluation = evaluate_selection(r_graph, sg)
             ranks[s] = diff_evaluation
-
+        if fast:
+            cont = i < 5
     if not os.path.exists(subj):
         os.makedirs(subj)
     dump_name = subj + "_Gincs.dump"
@@ -140,7 +141,12 @@ if __name__ == '__main__':
              'Software': "http://dbpedia.org/ontology/Software"}
     subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
 
+    subjectsPerson = {  # 'personn': "http://dbpedia.org/ontology/Person",
+        'politician': "http://dbpedia.org/ontology/Politician",
+        # 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
+        # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
+        'comedian': "http://dbpedia.org/ontology/Comedian"}
     rules = {}
-    for s, suri in subjects_f.items():
+    for s, suri in subjectsPerson.items():
         fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
 
