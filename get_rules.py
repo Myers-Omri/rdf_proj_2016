@@ -77,7 +77,7 @@ if __name__ == '__main__':
     #for s, suri in {'comedian': "http://dbpedia.org/ontology/Comedian"}.:
 
        
-    print_rules_to_csv("comedian")
+    print_rules_to_csv("Plant")
         
 
     # rules_file = open("rules.dump", 'r')

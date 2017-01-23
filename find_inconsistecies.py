@@ -4,7 +4,7 @@ import sys
 import os
 from miner import miner
 from graphp import evaluate_selection
-
+from Utils import dictionaries
 DBPEDIA_URL = "http://dbpedia.org/sparql"
 
 try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia.org/resource/City"},
@@ -16,47 +16,49 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     if not os.path.exists(rf_name):
         return
 
+    ons = {}
     sparql = SPARQLWrapper(db)
     if load:
         rules_file = open(rf_name, 'r')
         all_rules = pickle.load(rules_file)
-        (rules, r_67, r_56,r4, ons) = all_rules
+        (rules, r_67, r_56, r4, ons) = all_rules
         rules_file.close()
+
     print "find inconsistencies, number of rules: {} ".format(str(len(rules)))
     i = 0
     inco_dict = {}
-    for key, r in rules.items():
-        i+=1
-        p = r['p']
-        t = r['t']
-        # count entities that ruin uniqueness
-		# for every property and type we mined before count and find the
-		# violations.
-        query_text = ("""
-            SELECT ?s ?cnt
-            WHERE {
-            {
-                SELECT ?s (COUNT(*) AS ?cnt)
-                WHERE{
-                    ?o a <%s>.
-                    ?s a <%s>;
-                     <%s> ?o .
+    for d, rn in [(rules, '85' ), (r_67, '67')]:
+        for key, r in d.items():
+            i+=1
+            p = r['p']
+            t = r['t']
+            # count entities that ruin uniqueness
+            # for every property and type we mined before count and find the
+            # violations.
+            query_text = ("""
+                SELECT ?s ?cnt
+                WHERE {
+                {
+                    SELECT ?s (COUNT(*) AS ?cnt)
+                    WHERE{
+                        ?o a <%s>.
+                        ?s a <%s>;
+                         <%s> ?o .
 
-                }GROUP BY ?s
-                ORDER BY DESC(?cnt)
-            }
-            FILTER ((?cnt > 1) && (?cnt < 3))
-            }""" % (t, s_uri, p))
-        sparql.setQuery(query_text)
-        sparql.setReturnFormat(JSON)
-        results_inner = sparql.query().convert()
-        for inner_res in results_inner["results"]["bindings"]:
-            s = inner_res["s"]["value"]
+                    }GROUP BY ?s
+                    ORDER BY DESC(?cnt)
+                }
+                FILTER ((?cnt > 1) && (?cnt < 3))
+                }""" % (t, s_uri, p))
+            sparql.setQuery(query_text)
+            sparql.setReturnFormat(JSON)
+            results_inner = sparql.query().convert()
+            for inner_res in results_inner["results"]["bindings"]:
+                s = inner_res["s"]["value"]
 
-            if s not in inco_dict:
-                inco_dict[s] = []
-            inco_dict[s].append((p, t))
-
+                if s not in inco_dict:
+                    inco_dict[s] = []
+                inco_dict[s].append((p, t, rn))
 
     for p in ons:
         query_text = ("""
@@ -82,7 +84,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
 
             if so not in inco_dict:
                 inco_dict[so] = []
-            inco_dict[so].append((p, "***ons***"))
+            inco_dict[so].append((p, "***ons***","***ons***"))
 
     if not os.path.exists(subj):
         os.makedirs(subj)
@@ -163,30 +165,10 @@ def rules_dict_from_dump(dump_name):
 
 
 if __name__ == '__main__':
-    subjects_f = {'person': "http://dbpedia.org/ontology/Person",
-                  'Event': "http://dbpedia.org/ontology/Event",
-                  'Location': "http://dbpedia.org/ontology/Location",
-                  'Organisation': "http://dbpedia.org/ontology/Organisation",
-                  'Manga': "http://dbpedia.org/ontology/Manga",
-                  'Animal': "http://dbpedia.org/ontology/Animal",
-                  'Mammal': "http://dbpedia.org/ontology/Mammal",
-                  'Eukaryote': "http://dbpedia.org/ontology/Eukaryote",
-                  'Software': "http://dbpedia.org/ontology/Software",
-                  'Play': "http://dbpedia.org/ontology/Play"}
 
-    subjects1 = {'person': "http://dbpedia.org/ontology/Person",
-             'Manga': "http://dbpedia.org/ontology/Manga",
-             'Animal': "http://dbpedia.org/ontology/Animal",
-             'Mammal': "http://dbpedia.org/ontology/Mammal",
-             'Software': "http://dbpedia.org/ontology/Software"}
-    subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
-
-    subjectsPerson = {  # 'personn': "http://dbpedia.org/ontology/Person",
-        #'politician': "http://dbpedia.org/ontology/Politician",
-        # 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
-        # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
-        'comedian': "http://dbpedia.org/ontology/Comedian"}
     rules = {}
-    for s, suri in subjectsPerson.items():
-        fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-        # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
+
+    for d in dictionaries:
+        for s, suri in d.items():
+            fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
+            # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
