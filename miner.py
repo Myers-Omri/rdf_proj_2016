@@ -366,9 +366,9 @@ if __name__ == '__main__':
     quick = False
     db = DBPEDIA_URL
 
-    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+    #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
 
-    # for d in dictionaries:
+    for d in dictionaries:
         for s, suri in d.items():
             t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri,))
             t.start()
