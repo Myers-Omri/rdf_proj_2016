@@ -374,4 +374,6 @@ if __name__ == '__main__':
             t.start()
 
 
-
+    '''
+    add some code to make sure finds also non type singles.
+    '''
