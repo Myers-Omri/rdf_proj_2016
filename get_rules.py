@@ -73,10 +73,11 @@ if __name__ == '__main__':
     
     
     
-    for s, suri in subjectsPerson.items():
+    #for s, suri in subjectsPerson.items():
+    #for s, suri in {'comedian': "http://dbpedia.org/ontology/Comedian"}.:
+
        
-       
-        print_rules_to_csv(s)
+    print_rules_to_csv("comedian")
         
 
     # rules_file = open("rules.dump", 'r')
@@ -147,5 +148,6 @@ if __name__ == '__main__':
     #         writer.writerow(data)
 
     # csvfile2.close()
+
 
 

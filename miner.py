@@ -5,8 +5,8 @@ import sys
 import os
 import time
 import graphp
-
-
+from threading import Thread
+from Utils import dictionaries
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
@@ -69,19 +69,25 @@ class miner():
         for o in o_list:
             o_dict[o] = []
             self.sparql.setQuery("""
-                                SELECT  DISTINCT  ?c
-                                WHERE{
-                                    <%s>  a   ?c .
-                                    FILTER regex(?c, "^http://dbpedia.org/ontology", "i")
-                                }
-                            """ % o)
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+            SELECT  DISTINCT ?t
+            WHERE{
+              <%s>  a   ?t .
+                FILTER (regex(?t, "^http://dbpedia.org/", "i"))
+                FILTER NOT EXISTS {
+                ?subtype ^a ?o ;
+                rdfs:subClassOf ?t .
+                FILTER ( ?subtype != ?t )
+                }
+            } """ % o)
 
             #need to filter the types to informative ones.
             self.sparql.setReturnFormat(JSON)
             results = self.sparql.query().convert()
 
             for result in results["results"]["bindings"]:
-                c = result["c"]["value"]
+                c = result["t"]["value"]
                 o_dict[o].append(c)
 
         return o_dict
@@ -92,6 +98,8 @@ class miner():
             self.RG.add_type_to_prop(p, t, u)
 
         query_text = ("""
+                        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
                         SELECT distinct  ?t1 ?r12 ?r21 ?t2
                         WHERE {
                         <%s> <%s> ?o1;
@@ -102,9 +110,18 @@ class miner():
                         ?o1 ?r12 ?o2.
                         ?o2 ?r21 ?o1.
 
-                        FILTER (regex(?t1, "^http://dbpedia.org/ontology", "i") && (!regex(?t1, "[#]", "i"))).
-                        FILTER (regex(?t2, "^http://dbpedia.org/ontology", "i") && (!regex(?t2, "[#]", "i")))
-
+                        FILTER (regex(?t1, "^http://dbpedia.org/", "i")).
+                        FILTER (regex(?t2, "^http://dbpedia.org/", "i")).
+                        FILTER NOT EXISTS {
+                            ?subtype1 ^a ?o1 ;
+                            rdfs:subClassOf ?t1 .
+                            FILTER ( ?subtype1 != ?t1 )
+                            }
+                        FILTER NOT EXISTS {
+                            ?subtype2 ^a ?o2 ;
+                            rdfs:subClassOf ?t2 .
+                            FILTER ( ?subtype2 != ?t2 )
+                            }
                         FILTER regex(?r12, "^http://dbpedia.org/ontology", "i").
                         FILTER regex(?r21, "^http://dbpedia.org/ontology", "i").
                         FILTER (?t1 != ?t2).
@@ -184,7 +201,7 @@ class miner():
                 elif len(o_list) == 1:
                     p_only_one += 1
 
-                self.update_graph(s, p , t_dict)
+#                self.update_graph(s, p , t_dict)
 
                 txt = "\b S loop progress: {}".format(i)
                 sys.stdout.write(txt)
@@ -209,16 +226,16 @@ class miner():
                 #if (tot >= min_pos_th):
                     if ((pos /tot) >= positive_total_ratio_th) :
                         rules70_[t_key] = data
-                    elif((pos /tot) >= 0.6):
+                    elif((pos /tot) >= 0.75):
                         rules60_70[t_key] = data
-                    elif((pos /tot) >= 0.5):
+                    elif((pos /tot) >= 0.6):
                         rules50_60[t_key] = data
                 else:
                     rules_wierd[t_key] = data
 
             if p_count > 0:
                 p_once_ratio = float(p_only_one)/p_count
-                if  p_once_ratio > 0.9:
+                if  p_once_ratio > 0.8:
                     one_of_a_kind[p] = p_once_ratio
 
             self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind)
@@ -243,20 +260,19 @@ class miner():
         t1 = time.time()
         total_time = t1 - t0
         avg_time = float(total_time) / p_size
-        print "get p_rules done, avg time {}".format(avg_time)
+        print "get p_rules done, total time {} ".format(total_time)
+        print "get p_rules done, avg time {} per property".format(avg_time)
         return all_rules_list
 
 
     def update_so_dict(self, p, s):
-
-
         o_list = []
         query_text = ("""
                     SELECT DISTINCT ?o
                     WHERE{
                             <%s> <%s> ?o .
                             ?o a ?t .
-                            FILTER regex(?t, "^http://dbpedia.org/", "i")
+                            FILTER (regex(?t, "^http://dbpedia.org/"))
                         } """ % (s, p))
         # I figured out that a good filter for the type of the object has to  be of "^http://dbpedia.org/ontology"
         # in oreder to get valuable results
@@ -270,15 +286,12 @@ class miner():
             # if s not in s_dict:
             #   s_dict[s] = []
             o_list.append(o)
-
         return o_list
 
-    def get_p_dict_from_dump(self, quick, dump_name):
-
-
+    @staticmethod
+    def get_p_dict_from_dump(quick, dump_name):
         p_dict_file = open(dump_name, 'r')
         p_dict = pickle.load(p_dict_file)
-
         p_dict_file.close()
         p_dict_ret = {}
         if quick:
@@ -286,13 +299,10 @@ class miner():
                 p_dict_ret[p] = 0
                 if i > 15 :
                     return p_dict_ret
-
-
-
         return p_dict
 
-
-    def get_s_dict_from_dump(self, dump_name):
+    @staticmethod
+    def get_s_dict_from_dump(dump_name):
 
         s_dict_file = open(dump_name, 'r')
         s_dict = pickle.load(s_dict_file)
@@ -301,90 +311,67 @@ class miner():
         return s_dict
 
 
-    def get_p_dict(self,quick, uri):
+    # def get_p_dict(self,quick, uri):
+    #
+    #     p_dict = {}
+    #     if quick:
+    #
+    #         p_dict["http://dbpedia.org/ontology/birthPlace"] = 0
+    #         #p_dict["http://dbpedia.org/ontology/residence"] = 0
+    #     else:
+    #         query_text = ("""
+    #             SELECT ?p (COUNT (?p) AS ?cnt)
+    #             WHERE {
+    #                 {
+    #                 SELECT DISTINCT ?s
+    #                 WHERE {
+    #                     ?s a <%s>.
+    #                 }LIMIT 500000
+    #                 }
+    #                 ?s ?p ?o
+    #                 FILTER regex(?p, "^http://dbpedia.org/property", "i")
+    #             }GROUP BY ?p
+    #              ORDER BY DESC(?cnt)
+    #              LIMIT 100
+    #             """ % uri)
+    #         self.sparql.setQuery(query_text)
+    #         self.sparql.setReturnFormat(JSON)
+    #         results_inner = self.sparql.query().convert()
+    #
+    #         for inner_res in results_inner["results"]["bindings"]:
+    #             p = inner_res["p"]["value"]
+    #             # cnt = inner_res["cnt"]["value"]
+    #             p_dict[p] = 0
+    #     p_dict_file = open('p_dict.dump', 'w')
+    #     pickle.dump(p_dict, p_dict_file)
+    #     p_dict_file.close()
+    #     print "get p_dict done"
+    #     return p_dict
 
-        p_dict = {}
-        if quick:
 
-            p_dict["http://dbpedia.org/ontology/birthPlace"] = 0
-            #p_dict["http://dbpedia.org/ontology/residence"] = 0
-        else:
-            query_text = ("""
-                SELECT ?p (COUNT (?p) AS ?cnt)
-                WHERE {
-                    {
-                    SELECT DISTINCT ?s
-                    WHERE {
-                        ?s a <%s>.
-                    }LIMIT 500000
-                    }
-                    ?s ?p ?o
-                    FILTER regex(?p, "^http://dbpedia.org/", "i")
-                }GROUP BY ?p
-                 ORDER BY DESC(?cnt)
-                 LIMIT 100
-                """ % uri)
-            self.sparql.setQuery(query_text)
-            self.sparql.setReturnFormat(JSON)
-            results_inner = self.sparql.query().convert()
-
-            for inner_res in results_inner["results"]["bindings"]:
-                p = inner_res["p"]["value"]
-                # cnt = inner_res["cnt"]["value"]
-                p_dict[p] = 0
-        p_dict_file = open('p_dict.dump', 'w')
-        pickle.dump(p_dict, p_dict_file)
-        p_dict_file.close()
-        print "get p_dict done"
-        return p_dict
+def mine_all_rules(dbt, st, surit):
+    print "started mining rules for: " + st
+    mm = miner(dbt, st, surit)
+    mm.mine_rules(False, min_pos_th=0.2, positive_total_ratio_th=0.85)
+    # GG = mm.RG
+    # dump_name = st + "/" + st + "_pg.dump"
+    # g_file = open(dump_name, 'w')
+    # pickle.dump(GG, g_file)
+    # g_file.close()
+    print "finished mining rules for: " + st
 
 
 if __name__ == '__main__':
-    from find_inconsistecies import fix_graphic
+    # from find_inconsistecies import fix_graphic
     quick = False
-    # choice = raw_input("quick or full")
-    # if choice == "full":
-    #     quick = False
-
     db = DBPEDIA_URL
-    # choice = raw_input("dbpedia or small")
-    # if choice == "small":
-    #     db = SMAL_URL
 
-    # min_pos_th = float(raw_input("enter the th weird rules \n"))
-    # positive_total_ratio_th = float(raw_input("enter the th for good rules rules \n"))
+    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
 
-    subjectsf = {'person': "http://dbpedia.org/ontology/Person",
-                'Event': "http://dbpedia.org/ontology/Event",
-                'Location': "http://dbpedia.org/ontology/Location",
-                'Organisation': "http://dbpedia.org/ontology/Organisation",
-                'Manga': "http://dbpedia.org/ontology/Manga",
-                'Animal': "http://dbpedia.org/ontology/Animal",
-                'Mammal': "http://dbpedia.org/ontology/Mammal",
-                'Eukaryote': "http://dbpedia.org/ontology/Eukaryote",
-                'Software': "http://dbpedia.org/ontology/Software",
-                'Play': "http://dbpedia.org/ontology/Play"}
+    # for d in dictionaries:
+        for s, suri in d.items():
+            t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri,))
+            t.start()
 
-    subjects = {'person': "http://dbpedia.org/ontology/Person",
-                # 'Manga': "http://dbpedia.org/ontology/Manga",
-                # 'Animal': "http://dbpedia.org/ontology/Animal",
-                # 'Mammal': "http://dbpedia.org/ontology/Mammal",
-                'Software': "http://dbpedia.org/ontology/Software"}
-    subjectsPerson = {  # 'personn': "http://dbpedia.org/ontology/Person",
-        # 'politician': "http://dbpedia.org/ontology/Politician",
-        # 'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
-        # 'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
-        'comedian': "http://dbpedia.org/ontology/Comedian"}
-        # 'architectural_structure': "http://dbpedia.org/ontology/ArchitecturalStructure"}
-    for s, suri in subjectsPerson.items():
-        mm = miner(db,s, suri)
-        all_rules = mm.mine_rules( quick,  min_pos_th=0.2, positive_total_ratio_th=0.8)
-        GG = mm.RG
-        dump_name = s + "/" + s + "_pg.dump"
-        g_file = open(dump_name, 'w')
-        pickle.dump(GG, g_file)
-        g_file.close()
-        try:
-            fix_graphic(db, GG, suri, s, fast=True, load=False)
-        except:
-            print "got a problem at: " + s
+
+
