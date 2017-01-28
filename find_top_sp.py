@@ -3,7 +3,7 @@ import os
 import pickle
 import sys
 from threading import Thread
-from Utils import dictionaries
+from Utils import dictionaries ,dictionariest
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 
@@ -79,13 +79,12 @@ def get_f_limits(uri):
     for inner_res in all_dict:
         cnt = inner_res["scnt"]["value"]
 
+    r = float(5000)/ float(cnt)
 
-    r = max (float(5000)/ cnt , 1)
-    l = r * 10000
-
+    l = r * 10000 if r < 0.5 else int(cnt)
 
     # just to make sure we dont miss anyone
-    return int(l) + 20
+    return int(l), int(cnt)
 
 
 
@@ -93,7 +92,7 @@ def get_all_top_of(uri , f_name, dir_name):
 
     i=0
     top_subjects = {}
-    limits = get_f_limits(uri)
+    limits, maxs = get_f_limits(uri)
     flag = get_top_1_percent(i, top_subjects, uri, limits)
     while flag:
         i += 1
@@ -103,7 +102,7 @@ def get_all_top_of(uri , f_name, dir_name):
         # sys.stdout.write(txt)
         # sys.stdout.write("\r")
         # sys.stdout.flush()
-        if i>150:
+        if i>150 or i*1000>maxs:
             flag = False
 
     if not os.path.exists(dir_name):
@@ -157,8 +156,8 @@ def get_ps(uri, s_name ):
     subjects_fname = s_name + "_top.dump"
     pprop_fname = s_name + "_prop.dump"
 
-    # get_all_top_of(uri, subjects_fname, s_name)
-    get_all_p_dict(uri, pprop_fname, s_name)
+    get_all_top_of(uri, subjects_fname, s_name)
+    #get_all_p_dict(uri, pprop_fname, s_name)
 
     print "finished: " + s_name
 
@@ -166,7 +165,7 @@ def get_ps(uri, s_name ):
 
 if __name__ == '__main__':
 
-    for d in dictionaries:
+    for d in dictionariest:
         for s, uri in d.items():
             t = Thread(target=get_ps, args=(uri,s,))
             t.start()

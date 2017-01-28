@@ -27,3 +27,7 @@ subjectsLive = {'Animal': "http://dbpedia.org/ontology/Animal",
                 'Play': "http://dbpedia.org/ontology/Play"}
 
 dictionaries = [subjectsPerson, subjectsPlaces, subjectsLive]
+
+
+
+dictionariest = [{'politician': "http://dbpedia.org/ontology/Politician"}]
