@@ -1,6 +1,7 @@
 import pickle
 import os
 import csv
+from Utils import dictionaries
 
 def get_subj_from_dump(subj_name):
     rf_name = subj_name + "/" + subj_name + "_top.dump"
@@ -58,36 +59,7 @@ def get_subj_from_dump(subj_name):
 
 if __name__ == '__main__':
 
-
-
-    subjects_f = {'person': "http://dbpedia.org/ontology/Person",
-                      'Event': "http://dbpedia.org/ontology/Event",
-                      'Location': "http://dbpedia.org/ontology/Location",
-                      'Organisation': "http://dbpedia.org/ontology/Organisation",
-                      'Manga': "http://dbpedia.org/ontology/Manga",
-                      'Animal': "http://dbpedia.org/ontology/Animal",
-                      'Mammal': "http://dbpedia.org/ontology/Mammal",
-                      'Eukaryote': "http://dbpedia.org/ontology/Eukaryote",
-                      'Software': "http://dbpedia.org/ontology/Software",
-                      'Play': "http://dbpedia.org/ontology/Play"}
-
-    subjects1 = {'person': "http://dbpedia.org/ontology/Person",
-             'Manga': "http://dbpedia.org/ontology/Manga",
-             'Animal': "http://dbpedia.org/ontology/Animal",
-             'Mammal': "http://dbpedia.org/ontology/Mammal",
-             'Software': "http://dbpedia.org/ontology/Software"}
-    subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
-
-
-    ssubjects = {#'personn': "http://dbpedia.org/ontology/Person",
-                'politician': "http://dbpedia.org/ontology/Politician",
-                'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
-                'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
-                'comedian': "http://dbpedia.org/ontology/Comedian",
-                'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
-
-
-
-    for s, suri in ssubjects.items():
-        get_subj_from_dump(s)
+    for d in dictionaries:
+        for s, suri in d.items():
+            get_subj_from_dump(s)
         

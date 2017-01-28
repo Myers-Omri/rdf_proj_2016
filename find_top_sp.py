@@ -8,11 +8,12 @@ from Utils import dictionaries
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 
 
-def get_top_1_percent(i, top_s_dict,uri):
+def get_top_1_percent(i, top_s_dict,uri, f_limit = 200):
     sparql = SPARQLWrapper(DBPEDIA_URL)
 
     limit = 10000
     offset = i * limit
+    s_f_limit = str(f_limit)
 
     slimit = str(limit)
     soffset = str(offset)
@@ -38,7 +39,7 @@ def get_top_1_percent(i, top_s_dict,uri):
         }
     } GROUP BY ?s
     ORDER BY DESC(?scnt)
-    LIMIT 200""" % (uri,slimit, soffset))
+    LIMIT %s""" % (uri,slimit, soffset, s_f_limit))
 
     sparql.setQuery(query_text)
     sparql.setReturnFormat(JSON)
@@ -53,14 +54,50 @@ def get_top_1_percent(i, top_s_dict,uri):
         return True
     return False
 
+
+def get_f_limits(uri):
+    cnt = 1
+    sparql = SPARQLWrapper(DBPEDIA_URL)
+    query_text = ("""
+        SELECT (COUNT(*)AS ?scnt)
+        WHERE
+        {
+            {
+                SELECT DISTINCT ?s
+                WHERE
+                {
+                    ?s a <%s>.
+                }
+            }
+        }
+        """ % (uri))
+
+    sparql.setQuery(query_text)
+    sparql.setReturnFormat(JSON)
+    results_inner = sparql.query().convert()
+    all_dict = results_inner["results"]["bindings"]
+    for inner_res in all_dict:
+        cnt = inner_res["scnt"]["value"]
+
+
+    r = max (float(5000)/ cnt , 1)
+    l = r * 10000
+
+
+    # just to make sure we dont miss anyone
+    return int(l) + 20
+
+
+
 def get_all_top_of(uri , f_name, dir_name):
 
     i=0
     top_subjects = {}
-    flag = get_top_1_percent(i, top_subjects, uri)
+    limits = get_f_limits(uri)
+    flag = get_top_1_percent(i, top_subjects, uri, limits)
     while flag:
         i += 1
-        flag = get_top_1_percent(i, top_subjects, uri)
+        flag = get_top_1_percent(i, top_subjects, uri, limits)
 
         # txt = "\b i progress:{} ".format(i)
         # sys.stdout.write(txt)
@@ -96,7 +133,7 @@ def get_all_p_dict(uri, dump_name,dir_name):
             }
             }GROUP BY ?p
              ORDER BY DESC(?cnt)
-             LIMIT 20
+             LIMIT 50
             """ % uri)
     sparql.setQuery(query_text)
     sparql.setReturnFormat(JSON)

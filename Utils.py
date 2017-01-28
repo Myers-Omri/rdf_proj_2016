@@ -4,7 +4,7 @@ class GraphObjectEncoder(JSONEncoder):
     def default(self, o):
         return o.__dict__
 
-subjectsPerson = {'person': "http://dbpedia.org/ontology/Person",
+subjectsPerson = {#'person': "http://dbpedia.org/ontology/Person",
                           'politician': "http://dbpedia.org/ontology/Politician",
                           'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
                           'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
