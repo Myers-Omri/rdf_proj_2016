@@ -10,7 +10,7 @@ from Utils import dictionaries
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
-
+DEBUG = False
 
 class miner():
 
@@ -76,9 +76,9 @@ class miner():
               <%s>  a   ?t .
                 FILTER (regex(?t, "^http://dbpedia.org/", "i"))
                 FILTER NOT EXISTS {
-                ?subtype ^a ?o ;
-                rdfs:subClassOf ?t .
-                FILTER ( ?subtype != ?t )
+                    ?subtype ^a ?o ;
+                    rdfs:subClassOf ?t .
+                    FILTER ( ?subtype != ?t )
                 }
             } """ % o)
 
@@ -107,8 +107,11 @@ class miner():
                         FILTER (?o1 < ?o2).
                         ?o1 a ?t1.
                         ?o2 a ?t2.
+
+                        OPTIONAL {
                         ?o1 ?r12 ?o2.
                         ?o2 ?r21 ?o1.
+                        }
 
                         FILTER (regex(?t1, "^http://dbpedia.org/", "i")).
                         FILTER (regex(?t2, "^http://dbpedia.org/", "i")).
@@ -124,7 +127,7 @@ class miner():
                             }
                         FILTER regex(?r12, "^http://dbpedia.org/ontology", "i").
                         FILTER regex(?r21, "^http://dbpedia.org/ontology", "i").
-                        FILTER (?t1 != ?t2).
+
                     }""" % (s, p, p))
 
         # I figured out that a good filter for the type of the object has to  be of "^http://dbpedia.org/ontology"
@@ -137,8 +140,11 @@ class miner():
             t2 = inner_res["t2"]["value"]
             r12 = inner_res["r12"]["value"]
             r21 = inner_res["r21"]["value"]
-
+            if r12 == "":
+                r12 = "None"
             self.RG.add_relation(t1,t2,p,r12)
+            if r21 == "":
+                r21 = "None"
             self.RG.add_relation(t2,t1,p,r21)
 
 
@@ -178,7 +184,7 @@ class miner():
         p_size = len(p_dict)
         t0 = time.time()
         for p in p_dict:
-
+            self.RG.add_prop(p)
             #s_dict = {}
             #this dictionary holds the statistics for every p separately p_unique_t_dict[t]={'pos': #uniqueness, 'tot': #totalappearence}
             p_unique_t_dict = {}
@@ -188,7 +194,7 @@ class miner():
             # for every person in the list (2000 in total)
             p_only_one = 0
             for i,s  in enumerate(s_dict):
-                self.RG.add_prop(p)
+
                 o_list = self.update_so_dict(p, s)
                 if o_list:
                     p_count += 1
@@ -201,18 +207,18 @@ class miner():
                 elif len(o_list) == 1:
                     p_only_one += 1
 
-#                self.update_graph(s, p , t_dict)
+                self.update_graph(s, p , t_dict)
 
-                txt = "\b S loop progress: {}".format(i)
-                sys.stdout.write(txt)
+                if DEBUG:
+                    txt = "\b S loop progress: {}".format(i)
+                    sys.stdout.write(txt)
+                    sys.stdout.write("\r")
+                    sys.stdout.flush()
+
+            if DEBUG:
+                sys.stdout.write("\b the total p are : {}".format(p_count))
                 sys.stdout.write("\r")
                 sys.stdout.flush()
-
-
-
-            sys.stdout.write("\b the total p are : {}".format(p_count))
-            sys.stdout.write("\r")
-            sys.stdout.flush()
 
             #print total_totals
             for t, counts in p_unique_t_dict.items():
@@ -239,11 +245,11 @@ class miner():
                     one_of_a_kind[p] = p_once_ratio
 
             self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind)
-
-            txt = "\b Properties progress:{} / {} ".format(progress, p_size)
-            sys.stdout.write(txt)
-            sys.stdout.write("\r")
-            sys.stdout.flush()
+            if DEBUG:
+                txt = "\b Properties progress:{} / {} ".format(progress, p_size)
+                sys.stdout.write(txt)
+                sys.stdout.write("\r")
+                sys.stdout.flush()
 
 
 
@@ -282,10 +288,8 @@ class miner():
         for inner_res in results_inner["results"]["bindings"]:
             # s = inner_res["s"]["value"]
             o = inner_res["o"]["value"]
-
-            # if s not in s_dict:
-            #   s_dict[s] = []
             o_list.append(o)
+
         return o_list
 
     @staticmethod
@@ -374,6 +378,3 @@ if __name__ == '__main__':
             t.start()
 
 
-    '''
-    add some code to make sure finds also non type singles.
-    '''

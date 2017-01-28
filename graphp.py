@@ -41,12 +41,11 @@ class SubjectGraph():
             if tnode == self.uri:
                 continue
             if 'obj' in dat:
-
                 dat['obj'].norm(totals)
-            if tnode in unis:
-                dat['obj'].is_unique = True
-            if tnode in singles:
-                dat['obj'].is_single = True
+                if tnode in unis:
+                    dat['obj'].is_unique = True
+                if tnode in singles:
+                    dat['obj'].is_single = True
 
         for eg in self.rel_dict:
             fn, tn , uri = eg
