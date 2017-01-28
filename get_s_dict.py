@@ -58,8 +58,7 @@ def get_subj_from_dump(subj_name):
 
 
 if __name__ == '__main__':
-
     for d in dictionaries:
         for s, suri in d.items():
             get_subj_from_dump(s)
-        
+
