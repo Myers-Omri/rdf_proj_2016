@@ -1,6 +1,6 @@
 
-var w = 800,
-    h = 800,
+var w = 1000,
+    h = 1000,
     fill = d3.scale.category20();
 
 var vis = d3.select("#chart")
@@ -10,8 +10,8 @@ var vis = d3.select("#chart")
 
 d3.json("force.json", function(json) {
   var force = d3.layout.force()
-      .charge(-100)
-      .linkDistance(100)
+      .charge(-200)
+      .linkDistance(300)
       .nodes(json.nodes)
       .links(json.links)
       .size([w, h])
