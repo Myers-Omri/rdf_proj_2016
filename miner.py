@@ -357,11 +357,11 @@ def mine_all_rules(dbt, st, surit):
     print "started mining rules for: " + st
     mm = miner(dbt, st, surit)
     mm.mine_rules(False, min_pos_th=0.2, positive_total_ratio_th=0.85)
-    # GG = mm.RG
-    # dump_name = st + "/" + st + "_pg.dump"
-    # g_file = open(dump_name, 'w')
-    # pickle.dump(GG, g_file)
-    # g_file.close()
+    GG = mm.RG
+    dump_name = st + "/" + st + "_pg.dump"
+    g_file = open(dump_name, 'w')
+    pickle.dump(GG, g_file)
+    g_file.close()
     print "finished mining rules for: " + st
 
 
