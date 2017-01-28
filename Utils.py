@@ -13,13 +13,13 @@ subjectsPerson = {#'person': "http://dbpedia.org/ontology/Person",
                           "EducationalInstitution": "http://dbpedia.org/ontology/EducationalInstitution"}
 
 
-subjectsPlaces = {'Place': "http://dbpedia.org/ontology/Place",
+subjectsPlaces = {#'Place': "http://dbpedia.org/ontology/Place",
                   'NaturalPlace': "http://dbpedia.org/ontology/NaturalPlace",
                   'HistoricPlace': "http://dbpedia.org/ontology/HistoricPlace",
                   'CelestialBody': "http://dbpedia.org/ontology/CelestialBody",
                   'architectural_structure': "http://dbpedia.org/ontology/ArchitecturalStructure"}
 
-subjectsLive = {'Animal': "http://dbpedia.org/ontology/Animal",
+subjectsLive = {#'Animal': "http://dbpedia.org/ontology/Animal",
                 'Plant': "http://dbpedia.org/ontology/Plant",
                 'Insect': "http://dbpedia.org/ontology/Insect",
                 'Fish': "http://dbpedia.org/ontology/Fish",
