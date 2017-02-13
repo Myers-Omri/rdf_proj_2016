@@ -174,7 +174,7 @@ class miner():
         p_dump_name = self.subject + "/" + self.subject + "_prop.dump"
         # get the 100 most popular properties for type person in dbp
         p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
-        s_dict = self.get_s_dict_from_dump(s_dump_name)
+        s_dict = self.get_s_dict_from_dump(quick, s_dump_name)
         rules70_ = {}
         rules60_70 = {}
         rules50_60= {}
@@ -292,12 +292,12 @@ class miner():
 
         return o_list
 
-    def __get_top_15_props(self, ps):
+    def __get_top_15_props(self, ps, n=5):
         p_dict_ret = {}
         for i, p in enumerate(ps):
             cur = ps[p]
             p_dict_ret[p] = cur
-            if i > 5:
+            if i > n:
                 m = min(p_dict_ret, key=p_dict_ret.get)
                 p_dict_ret.pop(m, None)
         return p_dict_ret
@@ -312,13 +312,16 @@ class miner():
             return self.__get_top_15_props(p_dict)
         return p_dict
 
-    @staticmethod
-    def get_s_dict_from_dump(dump_name):
+
+    def get_s_dict_from_dump(self, quick, dump_name):
 
         s_dict_file = open(dump_name, 'r')
         s_dict = pickle.load(s_dict_file)
 
         s_dict_file.close()
+        if quick:
+            return self.__get_top_15_props(s_dict, n=500)
+
         return s_dict
 
 
