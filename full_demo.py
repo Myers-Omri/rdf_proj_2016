@@ -5,52 +5,22 @@ DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 
 
 if __name__ == '__main__':
-    quick = False
+    quick = True
 
     db = DBPEDIA_URL
 
 
-    min_pos_th = 0 #a small number just to separate the bizzar rule as we will see in the example.
-    positive_total_ratio_th = 0.82  #selected after trying few values found to be the most suitable for the ration between
+    #min_pos_th = 0 #a small number just to separate the bizzar rule as we will see in the example.
+   # positive_total_ratio_th = 0.82  #selected after trying few values found to be the most suitable for the ration between
     #positive to total appearence where the positive is when tuple (p,t ) is unique
-    subjects_f= {'person': "http://dbpedia.org/ontology/Person",
-                'Event': "http://dbpedia.org/ontology/Event",
-                'Location': "http://dbpedia.org/ontology/Location",
-                'Organisation': "http://dbpedia.org/ontology/Organisation",
-                'Manga': "http://dbpedia.org/ontology/Manga",
-                'Animal': "http://dbpedia.org/ontology/Animal",
-                'Mammal': "http://dbpedia.org/ontology/Mammal",
-                'Eukaryote': "http://dbpedia.org/ontology/Eukaryote",
-                'Software': "http://dbpedia.org/ontology/Software",
-                'Play': "http://dbpedia.org/ontology/Play"}
 
-    subjects1 = {'Manga': "http://dbpedia.org/ontology/Manga",
-                 'Mammal': "http://dbpedia.org/ontology/Mammal",
-                 'Event': "http://dbpedia.org/ontology/Event",
-                'Location': "http://dbpedia.org/ontology/Location",
-                'Organisation': "http://dbpedia.org/ontology/Organisation",
-                'Play': "http://dbpedia.org/ontology/Play",
-                'Software': "http://dbpedia.org/ontology/Software"}
-    subjects0 = {'person': "http://dbpedia.org/ontology/Person"}
+    for d in dictionaries:
+        for s, suri in d.items():
+            t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri,))
+            t.start()
 
-
-    subjectsPerson = {#'personn': "http://dbpedia.org/ontology/Person",
-                'politician': "http://dbpedia.org/ontology/Politician",
-                'soccer_player': "http://dbpedia.org/ontology/SoccerPlayer",
-                'baseball_players': "http://dbpedia.org/ontology/BaseballPlayer",
-                'comedian': "http://dbpedia.org/ontology/Comedian",
-                'architectural_structure' : "http://dbpedia.org/ontology/ArchitecturalStructure"}
                 
-                
-    for s, suri in subjectsPerson.items():
-        try:
-            mm = miner(db, s, suri)
-            all_rules = mm.mine_rules(quick, min_pos_th, positive_total_ratio_th)
-            print "finished mining for: " + s
-        except:
-            print "problem in:" + s
-            continue
-    
+
 
     # for s, suri in subjects0.items():
     #

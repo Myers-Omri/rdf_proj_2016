@@ -126,7 +126,8 @@ def get_all_p_dict(uri, dump_name,dir_name):
                     SELECT DISTINCT ?s ?p
                     WHERE {
                         ?s a <%s>;
-                            ?p ?o
+                            ?p ?o.
+                        ?o a ?t
                     FILTER regex(?p, "^http://dbpedia.org/property/", "i")
                 }LIMIT 500000
             }

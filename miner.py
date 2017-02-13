@@ -292,17 +292,24 @@ class miner():
 
         return o_list
 
-    @staticmethod
-    def get_p_dict_from_dump(quick, dump_name):
+    def __get_top_15_props(self, ps):
+        p_dict_ret = {}
+        for i, p in enumerate(ps):
+            cur = ps[p]
+            p_dict_ret[p] = cur
+            if i > 5:
+                m = min(p_dict_ret, key=p_dict_ret.get)
+                p_dict_ret.pop(m, None)
+        return p_dict_ret
+
+
+    def get_p_dict_from_dump(self,quick, dump_name):
         p_dict_file = open(dump_name, 'r')
         p_dict = pickle.load(p_dict_file)
         p_dict_file.close()
-        p_dict_ret = {}
+
         if quick:
-            for i,p in enumerate(p_dict):
-                p_dict_ret[p] = 0
-                if i > 15 :
-                    return p_dict_ret
+            return self.__get_top_15_props(p_dict)
         return p_dict
 
     @staticmethod
