@@ -133,7 +133,7 @@ def get_all_p_dict(uri, dump_name,dir_name):
             }
             }GROUP BY ?p
              ORDER BY DESC(?cnt)
-             LIMIT 50
+             LIMIT 30
             """ % uri)
     sparql.setQuery(query_text)
     sparql.setReturnFormat(JSON)
@@ -157,7 +157,7 @@ def get_ps(uri, s_name ):
     subjects_fname = s_name + "_top.dump"
     pprop_fname = s_name + "_prop.dump"
 
-    #get_all_top_of(uri, subjects_fname, s_name)
+    get_all_top_of(uri, subjects_fname, s_name)
     get_all_p_dict(uri, pprop_fname, s_name)
 
     print "finished: " + s_name
