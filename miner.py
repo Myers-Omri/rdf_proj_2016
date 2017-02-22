@@ -325,10 +325,10 @@ class miner():
         return s_dict
 
 
-def mine_all_rules(dbt, st, surit):
+def mine_all_rules(dbt, st, surit, Q=False):
     print "started mining rules for: " + st
     mm = miner(dbt, st, surit)
-    mm.mine_rules(False, min_pos_th=0.2, positive_total_ratio_th=0.85)
+    mm.mine_rules(Q, min_pos_th=0.2, positive_total_ratio_th=0.85)
     GG = mm.RG
     dump_name = st + "/" + st + "_pg.dump"
     g_file = open(dump_name, 'w')
