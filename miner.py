@@ -10,7 +10,7 @@ from Utils import dictionaries
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
-DEBUG = True
+DEBUG = False
 
 class miner():
 
@@ -183,6 +183,7 @@ class miner():
         progress = 0
         p_size = len(p_dict)
         t0 = time.time()
+        p_indx = 0
         for p in p_dict:
             self.RG.add_prop(p)
             #s_dict = {}
@@ -207,7 +208,7 @@ class miner():
                 elif len(o_list) == 1:
                     p_only_one += 1
 
-                #self.update_graph(s, p , t_dict)
+                self.update_graph(s, p , t_dict)
 
                 if DEBUG:
                     txt = "\b S loop progress: {}".format(i)
@@ -219,7 +220,7 @@ class miner():
                 sys.stdout.write("\b the total p are : {}".format(p_count))
                 sys.stdout.write("\r")
                 sys.stdout.flush()
-
+            p_indx += 1
             #print total_totals
             for t, counts in p_unique_t_dict.items():
                 pos = float(counts['pos'])
