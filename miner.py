@@ -207,7 +207,7 @@ class miner():
                 elif len(o_list) == 1:
                     p_only_one += 1
 
-                self.update_graph(s, p , t_dict)
+                #self.update_graph(s, p , t_dict)
 
                 if DEBUG:
                     txt = "\b S loop progress: {}".format(i)
