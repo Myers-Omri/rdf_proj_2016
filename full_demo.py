@@ -17,9 +17,9 @@ if __name__ == '__main__':
 
     for d in dictionariest:
         for s, suri in d.items():
-            t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri,))
-            t.start()
-
+            #t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri,))
+            #t.start()
+            mine_all_rules(DBPEDIA_URL, s, suri)
                 
 
 
