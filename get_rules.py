@@ -1,7 +1,7 @@
 import csv
 import pickle
 import os
-from Utils import dictionaries
+from Utils import dictionaries, dictionariest
 
 
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     #for s, suri in subjectsPerson.items():
     #for s, suri in {'comedian': "http://dbpedia.org/ontology/Comedian"}.:
 
-    for d in dictionaries:
+    for d in dictionariest:
         for s, suri in d.items():
             print_rules_to_csv(s)
         

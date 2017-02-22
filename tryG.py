@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
 
 
-    tg_file = open("olds\politician\politician_pg.dump" , 'r')
+    tg_file = open("politician/politician_pg.dump" , 'r')
     tg = pickle.load(tg_file)
     tg_file.close()
 
