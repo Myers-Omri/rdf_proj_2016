@@ -10,7 +10,7 @@ from Utils import dictionaries
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
-DEBUG = False
+DEBUG = True
 
 class miner():
 
