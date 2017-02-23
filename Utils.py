@@ -30,5 +30,9 @@ dictionaries = [subjectsPerson, subjectsPlaces, subjectsLive]
 
 
 
-dictionariest = [{'comedian': "http://dbpedia.org/ontology/Comedian"}]
+dictionariest = [{"Company": "http://dbpedia.org/ontology/Company",
+                  "EducationalInstitution": "http://dbpedia.org/ontology/EducationalInstitution",
+                  'HistoricPlace': "http://dbpedia.org/ontology/HistoricPlace",
+                  'Mammal': "http://dbpedia.org/ontology/Mammal",
+                  'Play': "http://dbpedia.org/ontology/Play"}]
 
