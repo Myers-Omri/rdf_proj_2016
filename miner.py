@@ -279,8 +279,9 @@ class miner():
                     WHERE{
                             <%s> <%s> ?o .
                             ?o a ?t .
-                            FILTER (regex(?t, "^http://dbpedia.org/"))
+
                         } """ % (s, p))
+        #FILTER (regex(?t, "^http://dbpedia.org/")) maybe removed
         # I figured out that a good filter for the type of the object has to  be of "^http://dbpedia.org/ontology"
         # in oreder to get valuable results
         self.sparql.setQuery(query_text)
