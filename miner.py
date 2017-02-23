@@ -10,7 +10,7 @@ from Utils import dictionaries, dictionariest
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
-DEBUG = False
+DEBUG = True
 PROFILER = False
 
 class miner():
@@ -317,7 +317,7 @@ class miner():
         p_dict_file.close()
 
         if quick:
-            return self.__get_top_15_props(p_dict, n=15)
+            return self.__get_top_15_props(p_dict, n=25)
         return p_dict
 
 
