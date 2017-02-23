@@ -208,7 +208,7 @@ class miner():
                 elif len(o_list) == 1:
                     p_only_one += 1
 
-                self.update_graph(s, p , t_dict)
+                #self.update_graph(s, p , t_dict)
 
                 if DEBUG:
                     txt = "\b S loop progress: {}".format(i)
@@ -245,7 +245,7 @@ class miner():
                 if  p_once_ratio > 0.8:
                     one_of_a_kind[p] = p_once_ratio
 
-            self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind)
+            #self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind)
             if DEBUG:
                 txt = "\b Properties progress:{} / {} ".format(progress, p_size)
                 sys.stdout.write(txt)
@@ -310,7 +310,7 @@ class miner():
         p_dict_file.close()
 
         if quick:
-            return self.__get_top_15_props(p_dict)
+            return self.__get_top_15_props(p_dict, n=15)
         return p_dict
 
 
