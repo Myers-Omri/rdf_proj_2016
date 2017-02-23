@@ -67,7 +67,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             {
                 SELECT ?s (COUNT(*) AS ?cnt)
                 WHERE{
-                    ?o a ?t .
+
                     ?s a <%s>;
                      <%s> ?o .
 
