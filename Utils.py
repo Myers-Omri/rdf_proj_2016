@@ -30,5 +30,5 @@ dictionaries = [subjectsPerson, subjectsPlaces, subjectsLive]
 
 
 
-dictionariest = [{'politician': "http://dbpedia.org/ontology/Politician"}]
+dictionariest = [{'comedian': "http://dbpedia.org/ontology/Comedian"}]
 
