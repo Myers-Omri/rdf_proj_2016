@@ -6,11 +6,12 @@ import os
 import time
 import graphp
 from threading import Thread
-from Utils import dictionaries
+from Utils import dictionaries, dictionariest
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
 DEBUG = False
+PROFILER = False
 
 class miner():
 
@@ -20,6 +21,7 @@ class miner():
         self.subject_uri = s_uri
         self.sparql = SPARQLWrapper(kb)
         self.RG = graphp.SubjectGraph(s_uri)
+        self.timers = {'get_os': 0, 'update_so_dict': 0}
 
     def get_ot_unique_dict(self, o_list, o_dict_t):
         res_dict = {}
@@ -64,7 +66,8 @@ class miner():
         :param db: the KB we query
         :return: o_dict dictionar {'<object>' : [c1,c2,c3...] (type list)
         """
-
+        if PROFILER:
+            t0 = time.time()
         o_dict = {}
         for o in o_list:
             o_dict[o] = []
@@ -89,7 +92,10 @@ class miner():
             for result in results["results"]["bindings"]:
                 c = result["t"]["value"]
                 o_dict[o].append(c)
-
+        if PROFILER:
+            t1 = time.time()
+            total_time = t1 - t0
+            self.timers['get_os'] += total_time
         return o_dict
 
 
@@ -197,7 +203,7 @@ class miner():
             for i,s  in enumerate(s_dict):
 
                 o_list = self.update_so_dict(p, s)
-                if o_list:
+                if len(o_list) > 0:
                     p_count += 1
                 ot_dict = self.get_os(o_list)
                 t_dict = self.get_ot_unique_dict(o_list, ot_dict)  # Done: for specific person and property find the unique types!
@@ -298,7 +304,7 @@ class miner():
         p_dict_ret = {}
         for i, p in enumerate(ps):
             cur = ps[p]
-            p_dict_ret[p] = cur
+            p_dict_ret[p] = int(cur)
             if i > n:
                 m = min(p_dict_ret, key=p_dict_ret.get)
                 p_dict_ret.pop(m, None)
@@ -341,14 +347,14 @@ def mine_all_rules(dbt, st, surit, Q=False):
 
 if __name__ == '__main__':
     # from find_inconsistecies import fix_graphic
-    quick = False
+    quick = True
     db = DBPEDIA_URL
 
     #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
 
-    for d in dictionaries:
+    for d in dictionariest:
         for s, suri in d.items():
-            t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri,))
+            t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri, quick,))
             t.start()
 
 
