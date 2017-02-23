@@ -4,7 +4,7 @@ import sys
 import os
 from miner import miner
 from graphp import evaluate_selection
-from Utils import dictionaries
+from Utils import dictionaries, dictionariest
 DBPEDIA_URL = "http://dbpedia.org/sparql"
 
 try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia.org/resource/City"},
@@ -21,7 +21,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     if load:
         rules_file = open(rf_name, 'r')
         all_rules = pickle.load(rules_file)
-        (rules, r_67, r_56, r4, ons) = all_rules
+        (rules, r_67, r_56, wrd, ons) = all_rules
         rules_file.close()
 
     print "find inconsistencies, number of rules: {} ".format(str(len(rules)))
@@ -168,7 +168,7 @@ if __name__ == '__main__':
 
     rules = {}
 
-    for d in dictionaries:
+    for d in dictionariest:
         for s, suri in d.items():
             fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
             # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
