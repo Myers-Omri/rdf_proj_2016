@@ -27,6 +27,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     print "find inconsistencies, number of rules: {} ".format(str(len(rules)))
     i = 0
     inco_dict = {}
+    inco_ons ={}
     for d, rn in [(rules, '85' ), (r_67, '67')]:
         for key, r in d.items():
             i+=1
@@ -83,18 +84,18 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             so = inner_res["s"]["value"]
 
             if so not in inco_dict:
-                inco_dict[so] = []
-            inco_dict[so].append((p, "***ons***","***ons***"))
+                inco_ons[so] = []
+            inco_ons[so].append((p, "***ons***","***ons***"))
 
     if not os.path.exists(subj):
         os.makedirs(subj)
 
     dump_name = subj + "_incs.dump"
     inc_file = open(subj + "/" + dump_name, 'w')
-
-    pickle.dump(inco_dict, inc_file)
+    incos = (inco_dict, inco_ons)
+    pickle.dump(incos, inc_file)
     inc_file.close()
-    return inco_dict
+    return incos
 
 def get_subjects(uri, i):
     sparql = SPARQLWrapper(DBPEDIA_URL)

@@ -347,7 +347,7 @@ def mine_all_rules(dbt, st, surit, Q=False):
 
 if __name__ == '__main__':
     # from find_inconsistecies import fix_graphic
-    quick = True
+    quick = False
     db = DBPEDIA_URL
 
     #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
