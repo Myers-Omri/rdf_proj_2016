@@ -1,7 +1,7 @@
 import csv
 import pickle
 import os
-from Utils import dictionaries
+from Utils import dictionaries, dictionariest
 
 
 def get_incs_f(subj_name):
@@ -30,7 +30,7 @@ def get_incs_f(subj_name):
 
 if __name__ == '__main__':
     
-    for d in dictionaries:
+    for d in dictionariest:
         for s, suri in d.items():
             get_incs_f(s)
 
