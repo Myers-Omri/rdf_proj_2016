@@ -186,6 +186,7 @@ class miner():
         rules50_60= {}
         rules_wierd = {}
         one_of_a_kind = {}
+        low_props = {}
         progress = 0
         p_size = len(p_dict)
         t0 = time.time()
@@ -235,21 +236,26 @@ class miner():
                 if tot != 0:
                     data['ratio'] = pos / tot
                 t_key = t + '@' + p
-                if (tot/p_count) >= min_pos_th:
-                #if (tot >= min_pos_th):
-                    if ((pos /tot) >= positive_total_ratio_th) :
-                        rules70_[t_key] = data
-                    elif((pos /tot) >= 0.75):
-                        rules60_70[t_key] = data
-                    elif((pos /tot) >= 0.6):
-                        rules50_60[t_key] = data
+                if float(p_count)/len(s_dict) > 0.1:
+                    if p_count > 0:
+                        if (tot/p_count) >= min_pos_th:
+                        #if (tot >= min_pos_th):
+                            if ((pos /tot) >= positive_total_ratio_th) :
+                                rules70_[t_key] = data
+                            elif((pos /tot) >= 0.75):
+                                rules60_70[t_key] = data
+                            elif((pos /tot) >= 0.6):
+                                rules50_60[t_key] = data
+                        else:
+                            rules_wierd[t_key] = data
                 else:
-                    rules_wierd[t_key] = data
+                    low_props[t_key] = data
 
-            if p_count > 0:
-                p_once_ratio = float(p_only_one)/p_count
-                if  p_once_ratio > 0.8:
-                    one_of_a_kind[p] = p_once_ratio
+            if float(p_count) / len(s_dict) > 0.1:
+                if p_count > 0:
+                    p_once_ratio = float(p_only_one)/p_count
+                    if  p_once_ratio > 0.8:
+                        one_of_a_kind[p] = p_once_ratio
 
             #self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind)
             if DEBUG:
@@ -260,7 +266,7 @@ class miner():
 
 
 
-        all_rules_list = (rules70_ ,rules60_70, rules50_60 ,rules_wierd, one_of_a_kind)
+        all_rules_list = (rules70_ ,rules60_70, rules50_60 ,rules_wierd, one_of_a_kind, low_props)
 
         dir_name = self.subject
         if not os.path.exists(dir_name):

@@ -21,7 +21,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     if load:
         rules_file = open(rf_name, 'r')
         all_rules = pickle.load(rules_file)
-        (rules, r_67, r_56, wrd, ons) = all_rules
+        (rules, r_67, r_56, wrd, ons, lows) = all_rules
         rules_file.close()
 
     print "find inconsistencies, number of rules: {} ".format(str(len(rules)))
