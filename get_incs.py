@@ -44,8 +44,8 @@ def get_incs_f(subj_name):
 
 
 if __name__ == '__main__':
-    
-    for d in dictionariest:
+    subjects0 = {'politician': "http://dbpedia.org/ontology/Politician"}
+    for d in [subjects0]:
         for s, suri in d.items():
             get_incs_f(s)
 

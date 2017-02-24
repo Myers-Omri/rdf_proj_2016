@@ -65,7 +65,7 @@ if __name__ == '__main__':
                 'Animal': "http://dbpedia.org/ontology/Animal",
                 'Mammal': "http://dbpedia.org/ontology/Mammal",
                 'Software': "http://dbpedia.org/ontology/Software"}
-    subjects0 = {'person': "http://dbpedia.org/ontology/Animal"}
+    subjects0 = {'politician': "http://dbpedia.org/ontology/Politician"}
     
     subjectsPerson = {#'personn': "http://dbpedia.org/ontology/Person",
                 'politician': "http://dbpedia.org/ontology/Politician",
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     #for s, suri in subjectsPerson.items():
     #for s, suri in {'comedian': "http://dbpedia.org/ontology/Comedian"}.:
 
-    for d in dictionariest:
+    for d in [subjects0]:
         for s, suri in d.items():
             print_rules_to_csv(s)
         
