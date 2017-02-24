@@ -83,7 +83,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
         for inner_res in results_inner["results"]["bindings"]:
             so = inner_res["s"]["value"]
 
-            if so not in inco_dict:
+            if so not in inco_ons:
                 inco_ons[so] = []
             inco_ons[so].append((p, "***ons***","***ons***"))
 
