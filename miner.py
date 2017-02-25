@@ -39,6 +39,27 @@ class miner():
                         res_dict[t] = True #this is the first time t in res_dict so unique so far!
         return res_dict
 
+    def get_ot_unique_dict_rel(self, o_list, o_dict_t):
+        res_dict = {}
+        # single= False
+        # if len(os) == 1:
+        #     single = True
+        for o in o_list:
+            if o in o_dict_t:
+                for t in o_dict_t[o]:
+
+                    # if (t in res_dict) or single:
+                    if t in res_dict:
+                        (res_dict[t])[0]=False   # this is the second time t in res_dict so not unique!
+                        (res_dict[t])[1].append(o)
+                        #print "added o not unique, res_dict is for type:" + t
+                        #print res_dict[t]
+                    else:
+                        res_dict[t] = [True,[o]]  # this is the first time t in res_dict so unique so far!
+                        #print "added o  unique, res_dict is for type:" + t
+                        #print res_dict[t]
+        return res_dict
+
 
     def update_pt(self, t_dict_t,p_unique_t_dict):
         """
@@ -207,6 +228,8 @@ class miner():
                 if len(o_list) > 0:
                     p_count += 1
                 ot_dict = self.get_ts_for_o(o_list)
+
+                #t_dict_rel = self.get_ot_unique_dict_rel(o_list, ot_dict)  # Done: for specific person and property find the unique types!
                 t_dict = self.get_ot_unique_dict(o_list, ot_dict)  # Done: for specific person and property find the unique types!
                 if len(o_list) > 1:
                     #ot_dict is list of types for every o in the list for specific person and property
@@ -238,8 +261,8 @@ class miner():
                 t_key = t + '@' + p
                 if float(p_count)/len(s_dict) > 0.1:
                     if p_count > 0:
-                        if (tot/p_count) >= min_pos_th:
-                        #if (tot >= min_pos_th):
+                        #if (tot/p_count) >= min_pos_th:
+                        if (tot >= 5):
                             if ((pos /tot) >= positive_total_ratio_th) :
                                 rules70_[t_key] = data
                             elif((pos /tot) >= 0.75):
@@ -370,11 +393,12 @@ if __name__ == '__main__':
     quick = True
     db = DBPEDIA_URL
 
-    #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
 
-    for d in dictionariesq:
+    #for d in dictionariesq:
         for s, suri in d.items():
-            t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri, quick,))
-            t.start()
+            # t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri, quick,))
+            # t.start()
+            mine_all_rules(DBPEDIA_URL, s, suri, quick)
 
 
