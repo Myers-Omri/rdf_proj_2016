@@ -5,7 +5,7 @@ from find_inconsistecies import fix_dbpedia
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
 if __name__ == '__main__':
-    quick = True
+    quick = False
 
     db = DBPEDIA_URL
 
@@ -19,7 +19,7 @@ if __name__ == '__main__':
             #t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri, quick,))
             #t.start()
             mine_all_rules(DBPEDIA_URL, s, suri, quick)
-            fix_dbpedia(DBPEDIA_URL, {}, suri, s, load=True)
+            fix_dbpedia(DBPEDIA_URL_UP, {}, suri, s, load=True)
                 
 
 

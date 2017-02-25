@@ -6,12 +6,12 @@ import os
 import time
 import graphp
 from threading import Thread
-from Utils import dictionaries, dictionariest
+from Utils import *
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
 DEBUG = True
-PROFILER = False
+PROFILER = True
 
 class miner():
 
@@ -57,7 +57,7 @@ class miner():
             p_unique_t_dict[t]['tot'] += 1
 
 
-    def get_os(self, o_list):
+    def get_ts_for_o(self, o_list):
         """
         Given list of object and a specific knowledge base creates a dictionary of o and the list of dbo:type that
         defines it
@@ -163,7 +163,7 @@ class miner():
         for p in p_dict:
             self.RG.add_prop(p)
             o_list = self.update_so_dict(p, s)
-            ot_dict = self.get_os(o_list)
+            ot_dict = self.get_ts_for_o(o_list)
             t_dict = self.get_ot_unique_dict(o_list,
                                              ot_dict)  # Done: for specific person and property find the unique types!
             if len(o_list) == 1:
@@ -192,7 +192,7 @@ class miner():
         t0 = time.time()
         p_indx = 0
         for p in p_dict:
-            self.RG.add_prop(p)
+            #self.RG.add_prop(p)
             #s_dict = {}
             #this dictionary holds the statistics for every p separately p_unique_t_dict[t]={'pos': #uniqueness, 'tot': #totalappearence}
             p_unique_t_dict = {}
@@ -206,7 +206,7 @@ class miner():
                 o_list = self.update_so_dict(p, s)
                 if len(o_list) > 0:
                     p_count += 1
-                ot_dict = self.get_os(o_list)
+                ot_dict = self.get_ts_for_o(o_list)
                 t_dict = self.get_ot_unique_dict(o_list, ot_dict)  # Done: for specific person and property find the unique types!
                 if len(o_list) > 1:
                     #ot_dict is list of types for every o in the list for specific person and property
@@ -256,7 +256,7 @@ class miner():
                     p_once_ratio = float(p_only_one)/p_count
                     if  p_once_ratio > 0.8:
                         one_of_a_kind[p] = p_once_ratio
-
+            progress += 1
             #self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind)
             if DEBUG:
                 txt = "\b Properties progress:{} / {} ".format(progress, p_size)
@@ -279,12 +279,17 @@ class miner():
         t1 = time.time()
         total_time = t1 - t0
         avg_time = float(total_time) / p_size
-        print "get p_rules done, total time {} ".format(total_time)
-        print "get p_rules done, avg time {} per property".format(avg_time)
+        print "mining done for {} times are:".format(self.subject)
+        print "total time: {} ".format(total_time)
+        print "avg time per property: {}".format(avg_time)
+        print "time at get_os: {}".format(self.timers['get_os'])
+        print "time at update_so_dict: {}".format(self.timers['update_so_dict'])
         return all_rules_list
 
 
     def update_so_dict(self, p, s):
+        if PROFILER:
+            t0 = time.time()
         o_list = []
         query_text = ("""
                     SELECT DISTINCT ?o
@@ -304,6 +309,10 @@ class miner():
             o = inner_res["o"]["value"]
             o_list.append(o)
 
+        if PROFILER:
+            t1 = time.time()
+            total_time = t1 - t0
+            self.timers['update_so_dict'] += total_time
         return o_list
 
     def __get_top_15_props(self, ps, n=5):
@@ -340,7 +349,7 @@ class miner():
 
 
 def mine_all_rules(dbt, st, surit, Q=False):
-    print "started mining rules for: " + st
+    print "**************started mining rules for:{} **********************".format(st)
     mm = miner(dbt, st, surit)
     mm.mine_rules(Q, min_pos_th=0.2, positive_total_ratio_th=0.85)
     GG = mm.RG
@@ -348,17 +357,22 @@ def mine_all_rules(dbt, st, surit, Q=False):
     g_file = open(dump_name, 'w')
     pickle.dump(GG, g_file)
     g_file.close()
-    print "finished mining rules for: " + st
+
+    dump_name = st + "/" + st + "_miner.dump"
+    m_file = open(dump_name, 'w')
+    pickle.dump(mm, m_file)
+    m_file.close()
+    print "=================finished mining rules for:{} ======================".format(st)
 
 
 if __name__ == '__main__':
     # from find_inconsistecies import fix_graphic
-    quick = False
+    quick = True
     db = DBPEDIA_URL
 
     #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
 
-    for d in dictionariest:
+    for d in dictionariesq:
         for s, suri in d.items():
             t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri, quick,))
             t.start()

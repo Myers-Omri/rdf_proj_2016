@@ -3,9 +3,9 @@ import os
 import pickle
 import sys
 from threading import Thread
-from Utils import dictionaries ,dictionariest
+from Utils import *
 
-DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
+DBPEDIA_URL = "http://dbpedia.org/sparql"
 
 
 def get_top_1_percent(i, top_s_dict,uri, f_limit = 200):
@@ -34,7 +34,7 @@ def get_top_1_percent(i, top_s_dict,uri, f_limit = 200):
                     OFFSET %s
                 }
                 ?s ?p ?o.
-                FILTER regex(?p, "^http://dbpedia.org/property/", "i")
+                FILTER regex(?p, "^http://dbpedia.org/ontology/", "i")
             }
         }
     } GROUP BY ?s
@@ -128,12 +128,12 @@ def get_all_p_dict(uri, dump_name,dir_name):
                         ?s a <%s>;
                             ?p ?o.
                         ?o a ?t
-                    FILTER regex(?p, "^http://dbpedia.org/property/", "i")
+                    FILTER regex(?p, "^http://dbpedia.org/ontology/", "i")
                 }LIMIT 500000
             }
             }GROUP BY ?p
              ORDER BY DESC(?cnt)
-             LIMIT 30
+             LIMIT 50
             """ % uri)
     sparql.setQuery(query_text)
     sparql.setReturnFormat(JSON)
@@ -166,7 +166,7 @@ def get_ps(uri, s_name ):
 
 if __name__ == '__main__':
 
-    for d in dictionaries:
+    for d in dictionariesq:
         for s, uri in d.items():
             t = Thread(target=get_ps, args=(uri,s,))
             t.start()

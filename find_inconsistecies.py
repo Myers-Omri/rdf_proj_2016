@@ -4,7 +4,7 @@ import sys
 import os
 from miner import miner
 from graphp import evaluate_selection
-from Utils import dictionaries, dictionariest
+from Utils import *
 DBPEDIA_URL = "http://dbpedia.org/sparql"
 
 try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia.org/resource/City"},
@@ -133,6 +133,7 @@ def fix_graphic(db, r_graph, s_uri, subj, fast=True, load = False):
         r_graph = rules_dict_from_dump(subj + '/' + subj + '_pg.dump')
 
     mm = miner(db,subj, s_uri)
+    #TODO: get the props from selected miner
     p_dump_name = subj + "/" + subj + "_prop.dump"
     # get the 100 most popular properties for type person in dbp
     ps = mm.get_p_dict_from_dump(fast, p_dump_name)
@@ -169,7 +170,7 @@ if __name__ == '__main__':
 
     rules = {}
 
-    for d in dictionariest:
+    for d in dictionariesq:
         for s, suri in d.items():
             fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
             # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
