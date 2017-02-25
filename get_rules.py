@@ -13,6 +13,7 @@ def print_rules_to_csv(subj):
         return
     rules_file = open(rf_name, 'r')
     all_rules = pickle.load(rules_file)
+    if len(all_rules) < 6: return
     good, r60_70, r50_60, weird , ons, lows= all_rules
     rules_file.close()
     csv_names = ['good.csv', 'r60_70.csv', 'r50_60.csv', 'weird.csv', 'ons.csv', 'lows.csv']
@@ -80,7 +81,7 @@ if __name__ == '__main__':
     #for s, suri in subjectsPerson.items():
     #for s, suri in {'comedian': "http://dbpedia.org/ontology/Comedian"}.:
 
-    for d in [subjects0]:
+    for d in dictionaries:
         for s, suri in d.items():
             print_rules_to_csv(s)
         

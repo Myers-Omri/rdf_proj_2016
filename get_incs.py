@@ -10,6 +10,7 @@ def get_incs_f(subj_name):
         return
     incs_file = open(rf_name, 'r')
     incos = pickle.load(incs_file)
+    if len(incos) < 2: return
     (inco_dict, inco_ones) = incos
     incs_file.close()
     csvf_name = subj_name + "/" + subj_name + "_incs.csv"
@@ -45,7 +46,7 @@ def get_incs_f(subj_name):
 
 if __name__ == '__main__':
     subjects0 = {'politician': "http://dbpedia.org/ontology/Politician"}
-    for d in [subjects0]:
+    for d in dictionaries:
         for s, suri in d.items():
             get_incs_f(s)
 
