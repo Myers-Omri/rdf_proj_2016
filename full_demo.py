@@ -4,6 +4,13 @@ from find_inconsistecies import fix_dbpedia
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
+
+
+def mine_rules_find_incs(s, suri, quick):
+    mine_all_rules(DBPEDIA_URL, s, suri, quick)
+    fix_dbpedia(DBPEDIA_URL_UP, {}, suri, s, load=True)
+
+
 if __name__ == '__main__':
     quick = False
 
@@ -14,12 +21,11 @@ if __name__ == '__main__':
    # positive_total_ratio_th = 0.82  #selected after trying few values found to be the most suitable for the ration between
     #positive to total appearence where the positive is when tuple (p,t ) is unique
 
-    for d in dictionaries:
+    for d in dictionariest:
         for s, suri in d.items():
-            #t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri, quick,))
-            #t.start()
-            mine_all_rules(DBPEDIA_URL, s, suri, quick)
-            fix_dbpedia(DBPEDIA_URL_UP, {}, suri, s, load=True)
+            t = Thread(target=mine_rules_find_incs, args=(s, suri, quick,))
+            t.start()
+
                 
 
 

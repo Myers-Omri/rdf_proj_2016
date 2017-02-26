@@ -10,7 +10,7 @@ from Utils import *
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
-DEBUG = True
+DEBUG = False
 PROFILER = True
 
 class miner():
@@ -403,7 +403,9 @@ class miner():
 
         if quick:
             return self.__get_top_15_props(p_dict, n=5)
-        return p_dict
+        else:
+            return self.__get_top_15_props(p_dict, n=25)
+
 
 
     def get_s_dict_from_dump(self, quick, dump_name):
@@ -414,8 +416,8 @@ class miner():
         s_dict_file.close()
         if quick:
             return self.__get_top_15_props(s_dict, n=50)
-
-        return s_dict
+        else:
+            return self.__get_top_15_props(s_dict, n=3000)
 
 
 def mine_all_rules(dbt, st, surit, Q=False):
@@ -437,6 +439,7 @@ def mine_all_rules(dbt, st, surit, Q=False):
 
 if __name__ == '__main__':
     # from find_inconsistecies import fix_graphic
+    DEBUG = True
     quick = True
     db = DBPEDIA_URL
 

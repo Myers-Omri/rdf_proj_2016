@@ -166,7 +166,7 @@ def get_ps(uri, s_name ):
 
 if __name__ == '__main__':
 
-    for d in dictionariesq:
+    for d in dictionariest:
         for s, uri in d.items():
             t = Thread(target=get_ps, args=(uri,s,))
             t.start()

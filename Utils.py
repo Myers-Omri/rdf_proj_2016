@@ -34,9 +34,8 @@ dictionariest = [{"Company": "http://dbpedia.org/ontology/Company",
                   'comedian': "http://dbpedia.org/ontology/Comedian",
                   'Fish': "http://dbpedia.org/ontology/Fish",
                   "EducationalInstitution": "http://dbpedia.org/ontology/EducationalInstitution",
-                  # 'HistoricPlace': "http://dbpedia.org/ontology/HistoricPlace",
-                  # 'Mammal': "http://dbpedia.org/ontology/Mammal",
-                  'Play': "http://dbpedia.org/ontology/Play"}]
+                  'politician': "http://dbpedia.org/ontology/Politician",
+                  'architectural_structure': "http://dbpedia.org/ontology/ArchitecturalStructure"}]
 
 dictionariesq = [{'comedian': "http://dbpedia.org/ontology/Comedian",
                   "EducationalInstitution": "http://dbpedia.org/ontology/EducationalInstitution",
