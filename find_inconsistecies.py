@@ -218,8 +218,8 @@ def rules_dict_from_dump(dump_name):
 if __name__ == '__main__':
 
     rules = {}
-
-    for d in dictionariesq:
+    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+    #for d in dictionariesq:
         for s, suri in d.items():
             fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
             # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
