@@ -15,16 +15,20 @@ def get_incs_f(subj_name):
     incs_file.close()
     csvf_name = subj_name + "/" + subj_name + "_incs.csv"
     with open(csvf_name, 'w') as csvfile:
-        fieldnames = ['Person', 'Property', 'Type', 'rn']
+        fieldnames = ['Person', 'Property', 'Type', 'rn', 'rel_rate']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
         for pers, pt in inco_dict.items():
             uni_pers = pers.encode('utf-8')
-            for p, t, rn in pt:
+            for p, t, rn , rl in pt:
                 uni_p = p.encode('utf-8')
+                p_list = str(uni_p).rsplit('/')
+                p_short = p_list[len(p_list)-1]
                 uni_t = t.encode('utf-8')
-                writer.writerow({'Person': uni_pers, 'Property': uni_p, 'Type': uni_t, 'rn': rn})
+                t_list = str(uni_t).rsplit('/')
+                t_short = p_list[len(t_list) - 1]
+                writer.writerow({'Person': uni_pers, 'Property': p_short, 'Type': t_short, 'rn': rn, 'rel_rate': rl })
                 #print {'Person': pers, 'Property': p, 'Type': t}
     csvfile.close()
 

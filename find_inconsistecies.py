@@ -45,9 +45,9 @@ def check_rel(t, s_uri, p, G):
         r12 = inner_res["r12"]["value"]
         r21 = inner_res["r21"]["value"]
         if inner_g.has_edge(tp,tp,r12) or inner_g.has_edge(tp,tp,r21):
-            return True
+            return max(inner_g[tp][tp][r12]['support'])
 
-    return False
+    return 0
 
 
 
@@ -104,12 +104,10 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             for inner_res in results_inner["results"]["bindings"]:
                 s = inner_res["s"]["value"]
 
-                recheck = check_rel(t, s, p, G)
-
-                if not recheck:
-                    if s not in inco_dict:
-                        inco_dict[s] = []
-                    inco_dict[s].append((p, t, rn))
+                rel_rate = check_rel(t, s, p, G)
+                if s not in inco_dict:
+                    inco_dict[s] = []
+                inco_dict[s].append((p, t, rn, rel_rate))
 
     for p in ons:
         query_text = ("""
