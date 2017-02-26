@@ -28,7 +28,7 @@ def get_incs_f(subj_name):
                 uni_t = t.encode('utf-8')
                 t_list = str(uni_t).rsplit('/')
                 t_short = p_list[len(t_list) - 1]
-                writer.writerow({'Person': uni_pers, 'Property': p_short, 'Type': t_short, 'rn': rn, 'rel_rate': rl })
+                writer.writerow({'Person': uni_pers, 'Property': p_short, 'Type': t_short, 'rn': rn, 'rel_rate': 1-rl })
                 #print {'Person': pers, 'Property': p, 'Type': t}
     csvfile.close()
 
@@ -50,7 +50,8 @@ def get_incs_f(subj_name):
 
 if __name__ == '__main__':
 
-    for d in dictionaries:
+    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+#    for d in dictionaries:
         for s, suri in d.items():
             get_incs_f(s)
 
