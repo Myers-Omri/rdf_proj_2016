@@ -43,7 +43,7 @@ def check_rel(t, s_uri, p, G):
         o = inner_res["o"]["value"]
         r12 = inner_res["r12"]["value"]
         r21 = inner_res["r21"]["value"]
-        if r12 in G[t][t] or r21 in G[t][t]:
+        if G.has_edge(t,t,r12) or G.has_edge(t,t,r21):
             return True
 
     return False
