@@ -51,13 +51,13 @@ class SubjectGraph():
         for eg, atp in self.rel_dict.items():
             fn, tn , uri = eg
             #prop_count = self.prop_objects[atp]
-            tut = self.graph[fn][tn][uri]['support']
-            retio = float(tut) / p_cnt
-
-            if retio < 0.06:
-                self.graph.remove_edge(fn,tn,uri)
-            else:
-                self.graph[fn][tn][uri]['support'] = min(float(tut) / p_cnt, 1)
+            if self.graph.has_edge(fn, tn , uri):
+                tut = self.graph[fn][tn][uri]['support']
+                retio = float(tut) / p_cnt
+                if retio < 0.06:
+                    self.graph.remove_edge(fn,tn,uri)
+                else:
+                    self.graph[fn][tn][uri]['support'] = min(float(tut) / p_cnt, 1)
 
 
 
