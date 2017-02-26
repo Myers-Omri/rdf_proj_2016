@@ -11,9 +11,51 @@ try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia
              {'p': "http://dbpedia.org/ontology/birthPlace", 't':"http://dbpedia.org/resource/City"}]
 
 
+
+def check_rel(t, s_uri, p, G):
+    or_dict={}
+    sparql = SPARQLWrapper(DBPEDIA_URL)
+    query_text = ("""
+        SELECT distinct  ?r12 ?r21
+        WHERE {
+                <%s> <%s> ?o1.
+                <%s> <%s> ?o2.
+
+
+               FILTER (?o1 < ?o2).
+                        ?o1 a <%s>.
+                        ?o2 a <%s>.
+
+                        OPTIONAL {
+                        ?o1 ?r12 ?o2.
+                        ?o2 ?r21 ?o1.
+                        }
+
+                        FILTER regex(?r12, "^http://dbpedia.org/ontology", "i").
+                        FILTER regex(?r21, "^http://dbpedia.org/ontology", "i").
+
+
+        }""" % ( s_uri, p, s_uri, p,t,t))
+    sparql.setQuery(query_text)
+    sparql.setReturnFormat(JSON)
+    results_inner = sparql.query().convert()
+    for inner_res in results_inner["results"]["bindings"]:
+        o = inner_res["o"]["value"]
+        r12 = inner_res["r12"]["value"]
+        r21 = inner_res["r21"]["value"]
+        if r12 in G[t][t] or r21 in G[t][t]:
+            return True
+
+    return False
+
+
+
+
+
 def fix_dbpedia(db, rules, s_uri, subj, load=True):
     rf_name = subj + "/" + subj + "_rules.dump"
-    if not os.path.exists(rf_name):
+    rg_name = subj + "/" + subj + "_pg.dump"
+    if not os.path.exists(rf_name) or not os.path.exists(rg_name):
         return
 
     ons = {}
@@ -23,6 +65,10 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
         all_rules = pickle.load(rules_file)
         (rules, r_67, r_56, wrd, ons, lows) = all_rules
         rules_file.close()
+
+        g_file = open(rg_name, 'r')
+        G = pickle.load(g_file)
+        g_file.close()
 
     print "find inconsistencies, number of rules: {} ".format(str(len(rules)))
     i = 0
@@ -57,9 +103,12 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             for inner_res in results_inner["results"]["bindings"]:
                 s = inner_res["s"]["value"]
 
-                if s not in inco_dict:
-                    inco_dict[s] = []
-                inco_dict[s].append((p, t, rn))
+                recheck = check_rel(t, s_uri, p, G)
+
+                if not recheck:
+                    if s not in inco_dict:
+                        inco_dict[s] = []
+                    inco_dict[s].append((p, t, rn))
 
     for p in ons:
         query_text = ("""
