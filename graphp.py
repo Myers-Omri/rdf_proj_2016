@@ -8,6 +8,8 @@ from networkx.readwrite import json_graph
 import logging, sys
 from Utils import GraphObjectEncoder
 
+DEBUG = False
+
 class SubjectGraph():
     def __init__(self, new_uri):
         self.uri = new_uri
@@ -47,17 +49,21 @@ class SubjectGraph():
         #             dat['obj'].is_unique = True
         #         if tnode in singles:
         #             dat['obj'].is_single = True
-
+        if DEBUG:
+            if totals > p_cnt:
+                print "ok, totals is bigger than p-cnt"
         for eg, atp in self.rel_dict.items():
             fn, tn , uri = eg
             #prop_count = self.prop_objects[atp]
             if self.graph.has_edge(fn, tn , uri) and atp == p_uri:
                 tut = self.graph[fn][tn][uri]['support']
                 retio = float(tut) / p_cnt
-                if retio < 0.06:
-                    if fn == 'http://dbpedia.org/ontology/City@http://dbpedia.org/ontology/birthPlace':
-                        if uri == "http://dbpedia.org/ontology/isPartOf":
-                            print "****just removed city birthPlace isPartOf. tut:{}, p_cnt:{}, retio:{}".format(tut,p_cnt, retio)
+                if retio < 0.019:
+                    if DEBUG:
+                        if fn == 'http://dbpedia.org/ontology/City@http://dbpedia.org/ontology/birthPlace' \
+                                and tn == 'http://dbpedia.org/ontology/City@http://dbpedia.org/ontology/birthPlace':
+                            if uri == "http://dbpedia.org/ontology/isPartOf":
+                                print "****just removed city birthPlace isPartOf. tut:{}, p_cnt:{}, retio:{}".format(tut,p_cnt, retio)
 
                     self.graph.remove_edge(fn,tn,uri)
                    #if fn == 'http://dbpedia.org/ontology/City@http://dbpedia.org/ontology/birthPlace'
@@ -270,6 +276,7 @@ if __name__ == '__main__':
     9. print incs.
 
     '''
+    DEBUG = True
 
 
 
