@@ -55,7 +55,12 @@ class SubjectGraph():
                 tut = self.graph[fn][tn][uri]['support']
                 retio = float(tut) / p_cnt
                 if retio < 0.06:
+                    if fn == 'http://dbpedia.org/ontology/City@http://dbpedia.org/ontology/birthPlace':
+                        if uri == "http://dbpedia.org/ontology/isPartOf":
+                            print "****just removed city birthPlace isPartOf. tut:{}, p_cnt:{}, retio:{}".format(tut,p_cnt, retio)
+
                     self.graph.remove_edge(fn,tn,uri)
+                   #if fn == 'http://dbpedia.org/ontology/City@http://dbpedia.org/ontology/birthPlace'
                 else:
                     self.graph[fn][tn][uri]['support'] = min(float(tut) / p_cnt, 1)
 
