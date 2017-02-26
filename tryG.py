@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
 
 
-    tg_file = open("politician/politician_pg.dump" , 'r')
+    tg_file = open("comedian/comedian_pg.dump" , 'r')
     tg = pickle.load(tg_file)
     tg_file.close()
 
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     i=7
     for n in G:
         if 'obj' in G.node[n]:
-            G.node[n]['name'] = str(G.node[n]['obj'].title)
+            G.node[n]['name'] = (G.node[n]['obj'].title).encode('utf-8')
         if n in tg.type_dict:
             G.node[n]['group'] = 7
         elif n == tg.uri:

@@ -175,6 +175,51 @@ class miner():
             self.RG.add_relation(t2,t1,p,r21)
 
 
+    def get_rels(self, from_o, to_o):
+        new_rels = []
+        query_text = ("""
+
+                    SELECT distinct  ?r
+                    WHERE {
+                    <%s> ?r <%s>.
+                    FILTER regex(?r, "^http://dbpedia.org/ontology", "i").
+                }""" % (from_o, to_o))
+
+
+        # I figured out that a good filter for the type of the object has to  be of "^http://dbpedia.org/ontology"
+        # in oreder to get valuable results
+        self.sparql.setQuery(query_text)
+        self.sparql.setReturnFormat(JSON)
+        results_inner = self.sparql.query().convert()
+        for inner_res in results_inner["results"]["bindings"]:
+
+            r = inner_res["r"]["value"]
+
+            if r == "":
+                r = "None"
+            new_rels.append(r)
+
+        return new_rels
+
+
+
+
+    def update_graph_rel(self,p, o_list, ot_dict):
+        for o, ts in ot_dict.items():
+            for t in ts:
+                self.RG.add_type_to_prop(p, t) #, u) ********fix this in graph
+
+        o_len = len(o_list)
+        for i in range(0,o_len):
+            for j in range(i, o_len):
+                o1=o_list[i]
+                o2=o_list[j]
+                relations_o12 = self.get_rels(o1, o2)
+                relations_o21 = self.get_rels(o2, o1)
+                for t1 in ot_dict[o1]:
+                    for t2 in ot_dict[o2]:
+                        self.RG.add_relations(t1, t2, p, relations_o12)
+                        self.RG.add_relations(t2, t1, p, relations_o21)
 
 
 
@@ -213,7 +258,7 @@ class miner():
         t0 = time.time()
         p_indx = 0
         for p in p_dict:
-            #self.RG.add_prop(p)
+            self.RG.add_prop(p)
             #s_dict = {}
             #this dictionary holds the statistics for every p separately p_unique_t_dict[t]={'pos': #uniqueness, 'tot': #totalappearence}
             p_unique_t_dict = {}
@@ -238,8 +283,8 @@ class miner():
                 elif len(o_list) == 1:
                     p_only_one += 1
 
-                #self.update_graph(s, p , t_dict)
-
+                #self.update_graph(s, p, t_dict) - move to end of s dict
+                self.update_graph_rel(p, o_list, ot_dict)
                 if DEBUG:
                     txt = "\b S loop progress: {}".format(i)
                     sys.stdout.write(txt)
@@ -280,7 +325,9 @@ class miner():
                     if  p_once_ratio > 0.8:
                         one_of_a_kind[p] = p_once_ratio
             progress += 1
-            #self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind)
+
+
+            self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind, p_count)
             if DEBUG:
                 txt = "\b Properties progress:{} / {} ".format(progress, p_size)
                 sys.stdout.write(txt)
@@ -355,7 +402,7 @@ class miner():
         p_dict_file.close()
 
         if quick:
-            return self.__get_top_15_props(p_dict, n=25)
+            return self.__get_top_15_props(p_dict, n=5)
         return p_dict
 
 
@@ -366,7 +413,7 @@ class miner():
 
         s_dict_file.close()
         if quick:
-            return self.__get_top_15_props(s_dict, n=500)
+            return self.__get_top_15_props(s_dict, n=50)
 
         return s_dict
 

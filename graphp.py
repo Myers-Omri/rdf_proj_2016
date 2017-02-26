@@ -29,13 +29,14 @@ class SubjectGraph():
             self.graph.add_node(new_prop, obj=prop_node)
             # self.graph[new_prop]['object'] = prop_node
             self.graph.add_edge(self.uri, new_prop)
-            #self.prop_objects[new_prop] = prop_node
+            #self.prop_objects[new_prop] = 1
             logging.info('new prop was added: ' + new_prop)
 
         self.graph.node[new_prop]['obj'].support += 1
+        #self.prop_objects[new_prop] += 1
         logging.info('prop was updated: ' + new_prop)
 
-    def normalize_graph(self, totals, unis, singles):
+    def normalize_graph(self, totals, unis, singles, p_cnt):
         # divide every atribute of the support with the number at totals
         for tnode, dat in self.graph.nodes(data=True):
             if tnode == self.uri:
@@ -47,10 +48,17 @@ class SubjectGraph():
                 if tnode in singles:
                     dat['obj'].is_single = True
 
-        for eg in self.rel_dict:
+        for eg, atp in self.rel_dict.items():
             fn, tn , uri = eg
-            ratio = self.graph[fn][tn][uri]['support']
-            self.graph[fn][tn][uri]['support'] = min(float(ratio) / totals, 1)
+            #prop_count = self.prop_objects[atp]
+            tut = self.graph[fn][tn][uri]['support']
+            retio = float(tut) / p_cnt
+
+            if retio < 0.06:
+                self.graph.remove_edge(fn,tn,uri)
+            else:
+                self.graph[fn][tn][uri]['support'] = min(float(tut) / p_cnt, 1)
+
 
 
     def reset_types(self):
@@ -58,7 +66,7 @@ class SubjectGraph():
             self.type_dict[t] = False
 
 
-    def add_type_to_prop(self, prop_uri, new_type, uniq):
+    def add_type_to_prop(self, prop_uri, new_type):
         # add new type if type found adds 1 to support
         if prop_uri not in self.graph:
             logging.info('prop not in graph: ' + prop_uri)
@@ -74,18 +82,20 @@ class SubjectGraph():
             self.graph.add_edge(prop_uri, new_type_p)
 
         self.graph.node[new_type_p]['obj'].support += 1
-        if uniq:
-            self.graph.node[new_type_p]['obj'].uniques += 1
-        # if self.grph_objs[new_type].checked:
-        #     self.grph_objs[new_type].is_unique = False
-        #
-        # self.grph_objs[new_type].checked = True
+
 
     def reset_uniques(self):
         pass
 
     def update_uniques(self):
         pass
+
+    def add_relations(self, from_type, to_type, at_prop, relations):
+        for rel_uri in relations:
+            self.add_relation(from_type, to_type, at_prop, rel_uri)
+
+
+
 
     def add_relation(self, from_type, to_type, at_prop, relatio_uri):
         '''
@@ -105,7 +115,7 @@ class SubjectGraph():
                     self.graph[fn][tn][relatio_uri]['support'] += 1
                 else:
                     self.graph.add_edge(fn, tn, key=relatio_uri, attr_dict={ 'support': 1 })
-                    self.rel_dict[(fn, tn, relatio_uri)] = False
+                    self.rel_dict[(fn, tn, relatio_uri)] = at_prop
 
 
                 logging.info('relation added at: ' + fn + ';' + tn + ';' + relatio_uri)
