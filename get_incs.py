@@ -27,7 +27,7 @@ def get_incs_f(subj_name):
                 p_short = p_list[len(p_list)-1]
                 uni_t = t.encode('utf-8')
                 t_list = str(uni_t).rsplit('/')
-                t_short = p_list[len(t_list) - 1]
+                t_short = t_list[len(t_list) - 1]
                 writer.writerow({'Person': uni_pers, 'Property': p_short, 'Type': t_short, 'rn': rn, 'rel_rate': 1-rl })
                 #print {'Person': pers, 'Property': p, 'Type': t}
     csvfile.close()
