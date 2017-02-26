@@ -45,7 +45,7 @@ def check_rel(t, s_uri, p, G):
         r12 = inner_res["r12"]["value"]
         r21 = inner_res["r21"]["value"]
         if inner_g.has_edge(tp,tp,r12) or inner_g.has_edge(tp,tp,r21):
-            return max(inner_g[tp][tp][r12]['support'])
+            return max(inner_g[tp][tp][r12]['support'],inner_g[tp][tp][r21]['support'])
 
     return 0
 

@@ -58,7 +58,7 @@ class SubjectGraph():
             if self.graph.has_edge(fn, tn , uri) and atp == p_uri:
                 tut = self.graph[fn][tn][uri]['support']
                 retio = float(tut) / p_cnt
-                if retio < 0.019:
+                if retio < 0.01:
                     if DEBUG:
                         if fn == 'http://dbpedia.org/ontology/City@http://dbpedia.org/ontology/birthPlace' \
                                 and tn == 'http://dbpedia.org/ontology/City@http://dbpedia.org/ontology/birthPlace':
