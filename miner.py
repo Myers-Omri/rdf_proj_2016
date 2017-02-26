@@ -327,7 +327,7 @@ class miner():
             progress += 1
 
 
-            self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind, p_count)
+            self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind,p,  p_count)
             if DEBUG:
                 txt = "\b Properties progress:{} / {} ".format(progress, p_size)
                 sys.stdout.write(txt)

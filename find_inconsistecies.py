@@ -13,7 +13,8 @@ try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia
 
 
 def check_rel(t, s_uri, p, G):
-    or_dict={}
+    inner_g = G.graph
+    tp = t + '@' + p
     sparql = SPARQLWrapper(DBPEDIA_URL)
     query_text = ("""
         SELECT distinct  ?r12 ?r21
@@ -40,10 +41,10 @@ def check_rel(t, s_uri, p, G):
     sparql.setReturnFormat(JSON)
     results_inner = sparql.query().convert()
     for inner_res in results_inner["results"]["bindings"]:
-        o = inner_res["o"]["value"]
+        #o = inner_res["o"]["value"]
         r12 = inner_res["r12"]["value"]
         r21 = inner_res["r21"]["value"]
-        if G.has_edge(t,t,r12) or G.has_edge(t,t,r21):
+        if inner_g.has_edge(tp,tp,r12) or inner_g.has_edge(tp,tp,r21):
             return True
 
     return False
@@ -103,7 +104,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             for inner_res in results_inner["results"]["bindings"]:
                 s = inner_res["s"]["value"]
 
-                recheck = check_rel(t, s_uri, p, G)
+                recheck = check_rel(t, s, p, G)
 
                 if not recheck:
                     if s not in inco_dict:

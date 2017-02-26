@@ -36,22 +36,22 @@ class SubjectGraph():
         #self.prop_objects[new_prop] += 1
         logging.info('prop was updated: ' + new_prop)
 
-    def normalize_graph(self, totals, unis, singles, p_cnt):
+    def normalize_graph(self, totals, unis, singles, p_uri, p_cnt):
         # divide every atribute of the support with the number at totals
-        for tnode, dat in self.graph.nodes(data=True):
-            if tnode == self.uri:
-                continue
-            if 'obj' in dat:
-                dat['obj'].norm(totals)
-                if tnode in unis:
-                    dat['obj'].is_unique = True
-                if tnode in singles:
-                    dat['obj'].is_single = True
+        # for tnode, dat in self.graph.nodes(data=True):
+        #     if tnode == self.uri:
+        #         continue
+        #     if 'obj' in dat:
+        #         dat['obj'].norm(totals)
+        #         if tnode in unis:
+        #             dat['obj'].is_unique = True
+        #         if tnode in singles:
+        #             dat['obj'].is_single = True
 
         for eg, atp in self.rel_dict.items():
             fn, tn , uri = eg
             #prop_count = self.prop_objects[atp]
-            if self.graph.has_edge(fn, tn , uri):
+            if self.graph.has_edge(fn, tn , uri) and atp == p_uri:
                 tut = self.graph[fn][tn][uri]['support']
                 retio = float(tut) / p_cnt
                 if retio < 0.06:
@@ -278,10 +278,28 @@ if __name__ == '__main__':
     ng.add_type_to_prop("placeOfDeath", "Country")
     ng.add_type_to_prop("dateOfBirth", "date")
     ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
-    tots = 2
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "Country","placeOfDeath" ,"located_in")
+    ng.add_relation("City", "City","placeOfDeath" ,"located_in")
+
+    tots = 20
+    p_c = 20
     uni = {'City'}
     singlet = {'dateOfBirth'}
-    ng.normalize_graph(tots, uni, singlet)
+    ng.normalize_graph(tots, uni, singlet, "placeOfDeath", p_c)
+    ng.normalize_graph(tots, uni, singlet, "dateOfBirth", p_c)
 
     G = ng.graph
     p1 = G.nodes()
