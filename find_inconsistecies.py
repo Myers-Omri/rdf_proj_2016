@@ -5,6 +5,7 @@ import os
 from miner import miner
 from graphp import evaluate_selection
 from Utils import *
+from feature import *
 DBPEDIA_URL = "http://dbpedia.org/sparql"
 
 try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia.org/resource/City"},
@@ -211,6 +212,50 @@ def fix_graphic(db, r_graph, s_uri, subj, fast=True, load = False):
 
 
 
+
+def find_p_incs(DBPEDIA_URL, s, suri):
+    rf_name = s + "/" + s + "_f_rules.dump"
+    #rg_name = subj + "/" + subj + "_pg.dump"
+    if not os.path.exists(rf_name):
+        return
+    fet= DbpKiller(DBPEDIA_URL, s, suri)
+    ons = {}
+    sparql = SPARQLWrapper(DBPEDIA_URL)
+
+    rules_file = open(rf_name, 'r')
+    all_p_rules = pickle.load(rules_file)
+
+    rules_file.close()
+
+    print "find inconsistencies PS, number of rules: {} ".format(str(len(rules)))
+    i = 0
+
+    cont = True
+    pincs = {}
+    while cont:
+        subs, cont = get_subjects(suri, i)
+        i += 1
+        for su in subs:
+            p_o_dict = fet.get_po_dict(su)
+            #l1 = p_o_dict.items()
+            for d, in all_p_rules:
+                p1 = d[0]
+                p2 = d[1]
+                if p1 in p_o_dict and p2 in p_o_dict:
+                    sim = fet.get_sim(p_o_dict[p1], p_o_dict[p2])
+                    if sim < 0.5:
+                        if su not in pincs:
+                            pincs[su] = []
+                        pincs[su].append((p1,p2))
+
+    dump_name = s + "_p_incs.dump"
+    inc_file = open(s + "/" + dump_name, 'w')
+    pickle.dump(pincs, inc_file)
+    inc_file.close()
+    return pincs
+
+
+
 def rules_dict_from_dump(dump_name):
         r_graph_file = open(dump_name, 'r')
         p_dict = pickle.load(r_graph_file)
@@ -224,5 +269,6 @@ if __name__ == '__main__':
     for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
     #for d in dictionariesq:
         for s, suri in d.items():
-            fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
+            #fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
+            find_p_incs(DBPEDIA_URL, s, suri)
             # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)

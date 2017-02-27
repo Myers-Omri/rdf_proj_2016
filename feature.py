@@ -13,6 +13,9 @@ SMAL_URL = "http://cultura.linkeddata.es/sparql"
 DEBUG = False
 PROFILER = True
 
+
+
+
 class DbpKiller():
 
     def __init__(self, kb, subj, s_uri):
