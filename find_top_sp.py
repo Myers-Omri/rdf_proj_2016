@@ -152,13 +152,58 @@ def get_all_p_dict(uri, dump_name,dir_name):
     #print "pdict done for: {}".format(dir_name)
 
 
+def get_p_p_dict(uri, dump_name,dir_name):
+    sparql = SPARQLWrapper(DBPEDIA_URL)
+    p_dict = {}
+
+
+    query_text = ("""
+            SELECT ?p (COUNT (?p) AS ?cnt)
+            WHERE {
+                    {
+                    SELECT DISTINCT ?s ?p
+                    WHERE {
+                        ?s a <%s>;
+                            ?p ?o.
+                        ?o a ?t
+                    FILTER regex(?p, "^http://dbpedia.org/property/", "i")
+                }LIMIT 500000
+            }
+            }GROUP BY ?p
+             ORDER BY DESC(?cnt)
+             LIMIT 50
+            """ % uri)
+    sparql.setQuery(query_text)
+    sparql.setReturnFormat(JSON)
+    results_inner = sparql.query().convert()
+
+    for inner_res in results_inner["results"]["bindings"]:
+        p = inner_res["p"]["value"]
+        cnt = inner_res["cnt"]["value"]
+        p_dict[p] = cnt
+
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    p_dict_file = open(dir_name + "/" + dump_name, 'w')
+    pickle.dump(p_dict, p_dict_file)
+    p_dict_file.close()
+    #print "pdict done for: {}".format(dir_name)
+
+
+
+
+
+
+
 def get_ps(uri, s_name ):
     print "started: " +s_name
     subjects_fname = s_name + "_top.dump"
     pprop_fname = s_name + "_prop.dump"
+    pprop_fname_p = s_name + "_prop_p.dump"
 
-    get_all_top_of(uri, subjects_fname, s_name)
-    get_all_p_dict(uri, pprop_fname, s_name)
+    # get_all_top_of(uri, subjects_fname, s_name)
+    # get_all_p_dict(uri, pprop_fname, s_name)
+    get_p_p_dict(uri, pprop_fname_p, s_name)
 
     print "finished: " + s_name
 
