@@ -248,6 +248,12 @@ def find_p_incs(DBPEDIA_URL, s, suri):
                             pincs[su] = []
                         pincs[su].append((p1,p2))
 
+        if DEBUG:
+            txt = "\b f inc progress:{}".format(i)
+            sys.stdout.write(txt)
+            sys.stdout.write("\r")
+            sys.stdout.flush()
+
     dump_name = s + "_p_incs.dump"
     inc_file = open(s + "/" + dump_name, 'w')
     pickle.dump(pincs, inc_file)
