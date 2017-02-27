@@ -272,8 +272,8 @@ def rules_dict_from_dump(dump_name):
 if __name__ == '__main__':
 
     rules = {}
-    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
-    #for d in dictionariest:
+    #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+    for d in dictionariest:
         for s, suri in d.items():
             #fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
             find_p_incs(DBPEDIA_URL, s, suri)
