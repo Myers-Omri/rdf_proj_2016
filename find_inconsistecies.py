@@ -11,7 +11,7 @@ DBPEDIA_URL = "http://dbpedia.org/sparql"
 try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia.org/resource/City"},
              {'p': "http://dbpedia.org/ontology/birthPlace", 't':"http://dbpedia.org/resource/City"}]
 
-
+DEBUG = True
 
 def check_rel(t, s_uri, p, G):
     inner_g = G.graph
@@ -235,7 +235,7 @@ def find_p_incs(DBPEDIA_URL, s, suri):
     while cont:
         subs, cont = get_subjects(suri, i)
         i += 1
-        for su in subs:
+        for j, su in enumerate(subs):
             p_o_dict = fet.get_po_dict(su)
             #l1 = p_o_dict.items()
             for d in all_p_rules:
@@ -248,11 +248,11 @@ def find_p_incs(DBPEDIA_URL, s, suri):
                             pincs[su] = []
                         pincs[su].append((p1,p2))
 
-        if DEBUG:
-            txt = "\b f inc progress:{}".format(i)
-            sys.stdout.write(txt)
-            sys.stdout.write("\r")
-            sys.stdout.flush()
+            if DEBUG:
+                txt = "\b f inc progress:{}/{}".format(j,i)
+                sys.stdout.write(txt)
+                sys.stdout.write("\r")
+                sys.stdout.flush()
 
     dump_name = s + "_p_incs.dump"
     inc_file = open(s + "/" + dump_name, 'w')
@@ -272,8 +272,8 @@ def rules_dict_from_dump(dump_name):
 if __name__ == '__main__':
 
     rules = {}
-    #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
-    for d in dictionariest:
+    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+    #for d in dictionariest:
         for s, suri in d.items():
             #fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
             find_p_incs(DBPEDIA_URL, s, suri)
