@@ -238,7 +238,7 @@ def find_p_incs(DBPEDIA_URL, s, suri):
         for su in subs:
             p_o_dict = fet.get_po_dict(su)
             #l1 = p_o_dict.items()
-            for d, in all_p_rules:
+            for d in all_p_rules:
                 p1 = d[0]
                 p2 = d[1]
                 if p1 in p_o_dict and p2 in p_o_dict:
