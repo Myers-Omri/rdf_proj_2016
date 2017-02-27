@@ -55,23 +55,22 @@ def print_f_rules_to_csv(subj):
     all_rules = pickle.load(rules_file)
     rules_file.close()
     csvf_name = subj + "/" + subj + "_f_rules.csv"
-    for rd in all_rules:
 
-        with open(csvf_name, 'w') as csvfile1:
-            fieldnames = ['p1', 'p2', 'Ratio']
-            writer = csv.DictWriter(csvfile1, fieldnames=fieldnames)
+    with open(csvf_name, 'w') as csvfile1:
+        fieldnames = ['p1', 'p2', 'Ratio']
+        writer = csv.DictWriter(csvfile1, fieldnames=fieldnames)
 
-            writer.writeheader()
-            for (p1,p2), r in rd.items():
-                p1_uni = (p1).encode('utf-8')
-                p2_uni = (p2).encode('utf-8')
+        writer.writeheader()
+        for (p1,p2), r in all_rules.items():
+            p1_uni = (p1).encode('utf-8')
+            p2_uni = (p2).encode('utf-8')
 
-                pos = float(r)
+            pos = float(r)
 
-                data = {'p1': p1_uni, 'p2': p2_uni, 'Ratio': pos}
-                writer.writerow(data)
+            data = {'p1': p1_uni, 'p2': p2_uni, 'Ratio': pos}
+            writer.writerow(data)
 
-        csvfile1.close()
+    csvfile1.close()
 
 
 if __name__ == '__main__':
