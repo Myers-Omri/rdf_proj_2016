@@ -141,7 +141,7 @@ class DbpKiller():
 
 
 if __name__ == '__main__':
-    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+    for d in dictionariest:
         for s, suri in d.items():
             dk = DbpKiller(DBPEDIA_URL, s, suri)
             dk.kill_dbp(quick=True)
