@@ -227,7 +227,7 @@ def find_p_incs(DBPEDIA_URL, s, suri):
 
     rules_file.close()
 
-    print "find inconsistencies PS, number of rules: {} ".format(str(len(rules)))
+    print "find inconsistencies PS, number of rules: {} ".format(str(len(all_p_rules)))
     i = 0
 
     cont = True
@@ -266,8 +266,8 @@ def rules_dict_from_dump(dump_name):
 if __name__ == '__main__':
 
     rules = {}
-    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
-    #for d in dictionariesq:
+    #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+    for d in dictionariest:
         for s, suri in d.items():
             #fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
             find_p_incs(DBPEDIA_URL, s, suri)

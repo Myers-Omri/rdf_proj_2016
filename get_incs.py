@@ -53,10 +53,33 @@ def get_incs_f(subj_name):
     csvfile.close()
 
 
+
+def get_incs_p(subj_name):
+    rf_name = subj_name + "/" + subj_name + "_p_incs.dump"
+    if not os.path.exists(rf_name):
+        return
+    incs_file = open(rf_name, 'r')
+    incos = pickle.load(incs_file)
+
+    incs_file.close()
+    csvf_name = subj_name + "/" + subj_name + "_p_incs.csv"
+    with open(csvf_name, 'w') as csvfile:
+        fieldnames = ['subj','p1', 'p2']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for su, pt in incos.items():
+            uni_su = su.encode('utf-8')
+            for p1,p2 in pt:
+                uni_p1 = p1.encode('utf-8')
+                uni_p2 = p2.encode('utf-8')
+                writer.writerow({'subj': uni_su, 'p1': uni_p1, 'p2': uni_p2})
+                # print {'subj': uni_su, 'p1': uni_p1, 'p2': uni_p2}
+    csvfile.close()
+
 if __name__ == '__main__':
 
-    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
-#    for d in dictionaries:
+    #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+    for d in dictionaries:
         for s, suri in d.items():
             get_incs_f(s)
-
+            get_incs_p(s)
