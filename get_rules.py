@@ -54,8 +54,10 @@ def print_f_rules_to_csv(subj):
     if not os.path.exists(rf_name):
         return
     rules_file = open(rf_name, 'r')
-    all_rules = pickle.load(rules_file)
+    all_p_rules_tup = pickle.load(rules_file)
     rules_file.close()
+
+    all_p_rules, op_sim_dict = all_p_rules_tup;
     csvf_name = subj + "/" + subj + "_f_rules.csv"
 
     with open(csvf_name, 'w') as csvfile1:
@@ -63,7 +65,7 @@ def print_f_rules_to_csv(subj):
         writer = csv.DictWriter(csvfile1, fieldnames=fieldnames)
 
         writer.writeheader()
-        for (p1,p2), r in all_rules.items():
+        for (p1,p2), r in all_p_rules.items():
             p1_uni = (p1).encode('utf-8')
             p2_uni = (p2).encode('utf-8')
 

@@ -7,7 +7,7 @@ import time
 import graphp
 from threading import Thread
 from Utils import *
-
+import re
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
 DEBUG = False
@@ -91,6 +91,16 @@ class DbpKiller():
 
         return float(tot_sim)/len(p1)
 
+    def get_op_sim_dict(self, sim_res_rules):
+        op_sim = {}
+        for (k1, k2) in sim_res_rules:
+            matchObj = re.search(r'ontology', k1 , flags=0)
+            if matchObj:
+                if k1 not in op_sim:
+                    op_sim[k1] = {}
+                op_sim[k1][k2] = True
+        return  op_sim
+
 
     def kill_dbp(self, quick, sim_th=0.5, tot_retio=0.5):
         print "mining rules for {}".format(self.subject)
@@ -144,19 +154,22 @@ class DbpKiller():
             for k,v in sim_res_rules.items():
                 print k, v
 
+        op_sim_dict = self.get_op_sim_dict(sim_res_rules)
+
         dir_name = self.subject
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         dump_name = dir_name + "/" + self.subject + "_f_rules.dump"
         r_dict_file = open(dump_name, 'w')
-        pickle.dump(sim_res_rules, r_dict_file)
+        pickle.dump((sim_res_rules, op_sim_dict), r_dict_file)
         r_dict_file.close()
 
-        return sim_tup_dict
+
+        return (sim_res_rules, op_sim_dict)
 
 
 
-def find_p_incs(dict_list, th=0.8, tut=0.8, quick=False):
+def find_p_incs(dict_list, th=0.8, tut=0.7, quick=False):
     for d in dict_list:
         for s, suri in d.items():
             dk = DbpKiller(DBPEDIA_URL, s, suri)
@@ -165,6 +178,6 @@ def find_p_incs(dict_list, th=0.8, tut=0.8, quick=False):
 
 if __name__ == '__main__':
     DEBUG = True
-    find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], 0.8, 0.8, True)
+    find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], 0.8, 0.7, True)
 
 

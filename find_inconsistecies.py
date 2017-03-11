@@ -259,8 +259,8 @@ def find_p_incs(DBPEDIA_URL, s, suri, fast=False):
     sparql = SPARQLWrapper(DBPEDIA_URL)
 
     rules_file = open(rf_name, 'r')
-    all_p_rules = pickle.load(rules_file)
-
+    all_p_rules_tup  = pickle.load(rules_file)
+    all_p_rules, op_sim_dict = all_p_rules_tup;
     rules_file.close()
 
     print "find inconsistencies PS, number of rules: {} ".format(str(len(all_p_rules)))
