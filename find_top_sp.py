@@ -190,11 +190,6 @@ def get_p_p_dict(uri, dump_name,dir_name):
     #print "pdict done for: {}".format(dir_name)
 
 
-
-
-
-
-
 def get_ps(uri, s_name ):
     print "started: " +s_name
     subjects_fname = s_name + "_top.dump"
