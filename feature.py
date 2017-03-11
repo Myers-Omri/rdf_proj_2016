@@ -106,6 +106,7 @@ class DbpKiller():
         # get the 100 most popular properties for type person in dbp
 
         sim_tup_dict = {}
+        sim_res_rules = {}
         for s in s_dict:
             p_o_dict = self.get_po_dict(s)
             l1 = p_o_dict.items()
@@ -135,12 +136,12 @@ class DbpKiller():
 
 
         for ps, counts in sim_tup_dict.items():
-            if float(counts['tot'])/len(s_dict) < 0.5:
-                if float(counts['sim'])/counts['tot'] < tot_retio:
-                    sim_tup_dict.pop(ps, None)
+            if float(counts['tot'])/len(s_dict) > 0.5:
+                if float(counts['sim'])/counts['tot'] > tot_retio:
+                    sim_res_rules[ps] = counts
         if DEBUG:
             print "*****printing dict for ratio:" + str(sim_th) + "; " + str(tot_retio) + "*****"
-            for k,v in sim_tup_dict.items():
+            for k,v in sim_res_rules.items():
                 print k, v
 
         dir_name = self.subject
