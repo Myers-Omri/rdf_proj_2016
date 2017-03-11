@@ -92,7 +92,7 @@ class DbpKiller():
         return float(tot_sim)/len(p1)
 
 
-    def kill_dbp(self, quick, sim_th=0.5):
+    def kill_dbp(self, quick, sim_th=0.7):
         print "mining rules for {}".format(self.subject)
         s_dump_name = self.subject + "/" + self.subject + "_top.dump"
         #p_dump_name = self.subject + "/" + self.subject + "_prop_p.dump"

@@ -78,10 +78,16 @@ def get_incs_p(subj_name):
                 # print {'subj': uni_su, 'p1': uni_p1, 'p2': uni_p2}
     csvfile.close()
 
-if __name__ == '__main__':
 
-    #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+
+def get_all_incs(dict_list):
     for d in dictionaries:
         for s, suri in d.items():
             get_incs_f(s)
             get_incs_p(s)
+
+if __name__ == '__main__':
+    get_all_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}])
+
+
+
