@@ -92,7 +92,7 @@ class DbpKiller():
         return float(tot_sim)/len(p1)
 
 
-    def kill_dbp(self, quick, sim_th=0.8):
+    def kill_dbp(self, quick, sim_th=0.5, tot_retio=0.5):
         print "mining rules for {}".format(self.subject)
         s_dump_name = self.subject + "/" + self.subject + "_top.dump"
         #p_dump_name = self.subject + "/" + self.subject + "_prop_p.dump"
@@ -119,16 +119,20 @@ class DbpKiller():
                         if p1[0] < p2[0]:
                             if (p1[0] , p2[0] ) not in sim_tup_dict:
                                 sim_tup_dict[(p1[0], p2[0])]=0
-                            sim_tup_dict[(p1[0] , p2[0] )] += sim
+                            sim_tup_dict[(p1[0] , p2[0] )] += 1
                         else:
                             if (p2[0], p1[0]) not in sim_tup_dict:
                                 sim_tup_dict[(p2[0], p1[0])] = 0
-                            sim_tup_dict[(p2[0], p1[0])] += sim
+                            sim_tup_dict[(p2[0], p1[0])] += 1
 
         for ps, tot_sim in sim_tup_dict.items():
-            if float(tot_sim)/len(s_dict) < 0.3:
+            if float(tot_sim)/len(s_dict) < tot_retio:
                 sim_tup_dict.pop(ps, None)
-
+        if DEBUG:
+            print "*****printing dict for ratio:" + str(sim_th) + "; " + str(tot_retio) + "*****"
+            for k,v in sim_tup_dict.items():
+                print k, v
+            
         dir_name = self.subject
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
@@ -141,15 +145,17 @@ class DbpKiller():
 
 
 
-def find_p_incs(dict_list):
+def find_p_incs(dict_list, th, tut, quick=True):
     for d in dict_list:
         for s, suri in d.items():
             dk = DbpKiller(DBPEDIA_URL, s, suri)
-            dk.kill_dbp(quick=True)
+            dk.kill_dbp(quick,th, tut)
 
 
 if __name__ == '__main__':
-
-    find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}])
+    DEBUG = True
+    for ret_th in [0.5, 0.6, 0.65, 0.7]:
+        for ret_tot in [0.2, 0.3, 0.4, 0.5, 0.6, 0.7]:
+            find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], ret_th, ret_tot, True)
 
 
