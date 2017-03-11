@@ -3,6 +3,7 @@ from Utils import *
 from find_inconsistecies import find_all_incs
 from get_rules import get_all_rules
 from get_incs import  get_all_incs
+from feature import find_p_incs
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
@@ -16,6 +17,8 @@ def mine_rules_find_incs(s, suri, quick):
         stage = "after allrules"
         get_all_rules(s)
         stage = " after get all rules"
+        find_p_incs(s, suri, th=0.8, tut=0.7, quick=False)
+        stage = " after find p incs"
         find_all_incs(s, suri, fast=quick)
         stage = "after find all incs"
         get_all_incs(s)

@@ -103,6 +103,8 @@ class DbpKiller():
 
 
     def kill_dbp(self, quick, sim_th=0.5, tot_retio=0.5):
+        if PROFILER:
+            t0 = time.time()
         print "mining rules for {}".format(self.subject)
         s_dump_name = self.subject + "/" + self.subject + "_top.dump"
         #p_dump_name = self.subject + "/" + self.subject + "_prop_p.dump"
@@ -164,20 +166,24 @@ class DbpKiller():
         pickle.dump((sim_res_rules, op_sim_dict), r_dict_file)
         r_dict_file.close()
 
-
+        if PROFILER:
+            t1 = time.time()
+            total_time = t1 - t0
+            self.timers['update_so_dict'] += total_time
+            print self.timers
         return (sim_res_rules, op_sim_dict)
 
 
 
-def find_p_incs(dict_list, th=0.8, tut=0.7, quick=False):
-    for d in dict_list:
-        for s, suri in d.items():
-            dk = DbpKiller(DBPEDIA_URL, s, suri)
-            dk.kill_dbp(quick,th, tut)
+def find_p_incs(s, suri, th=0.8, tut=0.7, quick=False):
+    dk = DbpKiller(DBPEDIA_URL, s, suri)
+    dk.kill_dbp(quick,th, tut)
 
 
 if __name__ == '__main__':
     DEBUG = True
+
+
     find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], 0.8, 0.7, True)
 
 
