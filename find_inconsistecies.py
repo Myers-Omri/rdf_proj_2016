@@ -81,6 +81,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     i = 0
     inco_dict = {}
     inco_ons ={}
+    inco_dbot_dict = {}
     for d, rn in [(rules, '85' ), (r_67, '67')]:
         for key, r in d.items():
             i+=1
@@ -141,12 +142,46 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
                 inco_ons[so] = []
             inco_ons[so].append((p, "***ons***","***ons***"))
 
+    for d, rn in [(r_7_dbo,'dbot_rules')]:
+        for key, r in d.items():
+            i += 1
+            p = r['p']
+            t = r['t']
+            # count entities that ruin uniqueness
+            # for every property and type we mined before count and find the
+            # violations.
+            query_text = ("""
+                SELECT ?s ?cnt
+                WHERE {
+                {
+                    SELECT ?s (COUNT(*) AS ?cnt)
+                    WHERE{
+                        ?o <http://dbpedia.org/ontology/type> <%s>.
+                        ?s a <%s>;
+                         <%s> ?o .
+
+                    }GROUP BY ?s
+                    ORDER BY DESC(?cnt)
+                }
+                FILTER ((?cnt > 1) && (?cnt < 3))
+                }""" % (t, s_uri, p))
+            sparql.setQuery(query_text)
+            sparql.setReturnFormat(JSON)
+            results_inner = sparql.query().convert()
+            for inner_res in results_inner["results"]["bindings"]:
+                s = inner_res["s"]["value"]
+
+                rel_rate = check_rel(t, s, p, G)
+                if s not in inco_dbot_dict:
+                    inco_dbot_dict[s] = []
+                inco_dbot_dict[s].append((p, t, rn, rel_rate))
+
     if not os.path.exists(subj):
         os.makedirs(subj)
 
     dump_name = subj + "_incs.dump"
     inc_file = open(subj + "/" + dump_name, 'w')
-    incos = (inco_dict, inco_ons)
+    incos = (inco_dict, inco_ons, inco_dbot_dict)
     pickle.dump(incos, inc_file)
     inc_file.close()
     return incos
