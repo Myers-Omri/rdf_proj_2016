@@ -362,21 +362,21 @@ class miner():
                 else:
                     low_props[t_key] = data
 
-            for t, counts in p_unique_dbot_dict.items():
-                pos = float(counts['pos'])
-                tot = float(counts['tot'])
-                data = {'p': p, 't': t, 'pos': pos, 'tot': tot}
+            for to, countso in p_unique_dbot_dict.items():
+                pos = float(countso['pos'])
+                tot = float(countso['tot'])
+                datao = {'p': p, 't': to, 'pos': pos, 'tot': tot}
                 if tot != 0:
-                    data['ratio'] = pos / tot
-                t_key = t + '@' + p
+                    datao['ratio'] = pos / tot
+                t_key = to + '@' + p
                 if float(p_count) / len(s_dict) > 0.1:
                     if p_count > 0:
                         # if (tot/p_count) >= min_pos_th:
                         if (tot >= 5):
                             if ((pos / tot) >= positive_total_ratio_th):
-                                rules70_dbo[t_key] = data
+                                rules70_dbo[t_key] = datao
                         else:
-                            rules_wierd_dbo[t_key] = data
+                            rules_wierd_dbo[t_key] = datao
 
 
             if float(p_count) / len(s_dict) > 0.1:
