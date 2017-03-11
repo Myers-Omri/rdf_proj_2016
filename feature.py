@@ -164,8 +164,8 @@ def find_p_incs(dict_list, th, tut, quick=True):
 
 if __name__ == '__main__':
     DEBUG = True
-    for ret_th in [0.5, 0.6, 0.65, 0.7]:
-        for ret_tot in [0.2, 0.3, 0.4, 0.5, 0.6, 0.7]:
+    for ret_th in [0.65, 0.7, 0.75, 0.8]:
+        for ret_tot in [ 0.6, 0.7, 0.75, 0.8]:
             find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], ret_th, ret_tot, True)
 
 
