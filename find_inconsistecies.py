@@ -118,10 +118,10 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
 
     for p in ons:
         query_text = ("""
-            SELECT ?s ?cnt
+            SELECT ?s (COUNT(*) AS ?cnt)
             WHERE {
             {
-                SELECT ?s (COUNT(*) AS ?cnt)
+                SELECT DISTINCT ?s ?o
                 WHERE{
 
                     ?s a <%s>;
@@ -261,7 +261,7 @@ def find_p_incs(DBPEDIA_URL, s, suri, all_incs, fast=False):
 
     rules_file = open(rf_name, 'r')
     all_p_rules_tup  = pickle.load(rules_file)
-    all_p_rules, op_sim_dict = all_p_rules_tup;
+    all_p_rules, op_sim_dict = all_p_rules_tup
     rules_file.close()
 
     print "find inconsistencies PS, number of rules: {} ".format(str(len(all_p_rules)))
