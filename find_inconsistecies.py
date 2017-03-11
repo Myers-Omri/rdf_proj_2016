@@ -69,7 +69,8 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     if load:
         rules_file = open(rf_name, 'r')
         all_rules = pickle.load(rules_file)
-        (rules, r_67, r_56, wrd, ons, lows) = all_rules
+        #all_rules_list = (rules70_, rules60_70, rules70_dbo, rules_wierd, rules_wierd_dbo, one_of_a_kind, low_props)
+        (rules, r_67, r_7_dbo, wrd, wrd_dbo, ons, lows) = all_rules
         rules_file.close()
 
         g_file = open(rg_name, 'r')
