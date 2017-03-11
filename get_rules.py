@@ -32,14 +32,15 @@ def print_rules_to_csv(subj):
                     data = {'Property': prop, 'Type': "", 'Ratio': pos, 'support': ""}
                     writer.writerow(data)
                 continue
-            for k, r in rd.items():
-                prop = (r['p']).encode('utf-8')
-                typet = (r['t']).encode('utf-8')
-                pos = float(r['pos'])
-                tot = float(r['tot'])
-                ratio = pos/tot
-                data = {'Property': prop, 'Type': typet, 'Ratio': ratio, 'support': tot}
-                writer.writerow(data)
+            else:
+                for k, r in rd.items():
+                    prop = (r['p']).encode('utf-8')
+                    typet = (r['t']).encode('utf-8')
+                    pos = float(r['pos'])
+                    tot = float(r['tot'])
+                    ratio = pos/tot
+                    data = {'Property': prop, 'Type': typet, 'Ratio': ratio, 'support': tot}
+                    writer.writerow(data)
 
         csvfile1.close()
 
