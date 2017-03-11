@@ -52,7 +52,7 @@ def check_rel(t, s_uri, p, G):
         elif inner_g.has_edge(tp,tp,r21):
             return inner_g[tp][tp][r21]['support']
         else:
-            return 0
+            return -1
 
 
 
@@ -126,6 +126,7 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
 
                     ?s a <%s>;
                      <%s> ?o .
+                     ?o a ?t.
 
                 }GROUP BY ?s
                 ORDER BY DESC(?cnt)
@@ -249,7 +250,7 @@ def fix_graphic(db, r_graph, s_uri, subj, fast=True, load = False):
 
 
 
-def find_p_incs(DBPEDIA_URL, s, suri, fast=False):
+def find_p_incs(DBPEDIA_URL, s, suri, all_incs, fast=False):
     rf_name = s + "/" + s + "_f_rules.dump"
     #rg_name = subj + "/" + subj + "_pg.dump"
     if not os.path.exists(rf_name):
@@ -275,23 +276,24 @@ def find_p_incs(DBPEDIA_URL, s, suri, fast=False):
             if i==1:
                 cont = False
         for j, su in enumerate(subs):
-            p_o_dict = fet.get_po_dict(su)
-            #l1 = p_o_dict.items()
-            for d in all_p_rules:
-                p1 = d[0]
-                p2 = d[1]
-                if p1 in p_o_dict and p2 in p_o_dict:
-                    sim = fet.get_sim(p_o_dict[p1], p_o_dict[p2])
-                    if sim < 0.5:
-                        if su not in pincs:
-                            pincs[su] = []
-                        pincs[su].append((p1,p2))
+            if su in all_incs[0] or su in all_incs[1]:
+                p_o_dict = fet.get_po_dict(su)
+                #l1 = p_o_dict.items()
+                for d in all_p_rules:
+                    p1 = d[0]
+                    p2 = d[1]
+                    if p1 in p_o_dict and p2 in p_o_dict:
+                        sim = fet.get_sim(p_o_dict[p1], p_o_dict[p2])
+                        if sim < 0.5:
+                            if su not in pincs:
+                                pincs[su] = []
+                            pincs[su].append((p1,p2))
 
-            if DEBUG:
-                txt = "\b f inc progress:{}/{}".format(j,i)
-                sys.stdout.write(txt)
-                sys.stdout.write("\r")
-                sys.stdout.flush()
+                if DEBUG:
+                    txt = "\b f inc progress:{}/{}".format(j,i)
+                    sys.stdout.write(txt)
+                    sys.stdout.write("\r")
+                    sys.stdout.flush()
 
     dump_name = s + "_p_incs.dump"
     inc_file = open(s + "/" + dump_name, 'w')
@@ -313,8 +315,8 @@ def find_all_incs(dict_list, fast):
     rules = {}
     for d in dict_list:
         for s, suri in d.items():
-            fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-            # find_p_incs(DBPEDIA_URL, s, suri, True)
+            incs = fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
+            find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
             # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
 
 if __name__ == '__main__':
