@@ -136,7 +136,7 @@ class DbpKiller():
 
 
         for ps, counts in sim_tup_dict.items():
-            if float(counts['tot'])/len(s_dict) > 0.2:
+            if float(counts['tot'])/len(s_dict) > 0.1:
                 if float(counts['sim'])/counts['tot'] > tot_retio:
                     sim_res_rules[ps] = counts
         if DEBUG:
