@@ -135,8 +135,9 @@ class DbpKiller():
 
 
         for ps, counts in sim_tup_dict.items():
-            if float(counts['sim'])/counts['tot'] < tot_retio:
-                sim_tup_dict.pop(ps, None)
+            if float(counts['tot'])/len(s_dict) < 0.5:
+                if float(counts['sim'])/counts['tot'] < tot_retio:
+                    sim_tup_dict.pop(ps, None)
         if DEBUG:
             print "*****printing dict for ratio:" + str(sim_th) + "; " + str(tot_retio) + "*****"
             for k,v in sim_tup_dict.items():
