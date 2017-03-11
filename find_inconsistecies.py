@@ -11,7 +11,7 @@ DBPEDIA_URL = "http://dbpedia.org/sparql"
 try_rules = [{'p': "http://dbpedia.org/ontology/residence" ,'t':	"http://dbpedia.org/resource/City"},
              {'p': "http://dbpedia.org/ontology/birthPlace", 't':"http://dbpedia.org/resource/City"}]
 
-DEBUG = True
+DEBUG = False
 
 def check_rel(t, s_uri, p, G):
     inner_g = G.graph
@@ -311,13 +311,18 @@ def rules_dict_from_dump(dump_name):
 
 
 
-def find_all_incs(dict_list, fast):
+def find_all_incs( s, suri, fast=False):
     rules = {}
-    for d in dict_list:
-        for s, suri in d.items():
-            incs = fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-            find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
-            # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
+    incs = fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
+    find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
+    # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
 
 if __name__ == '__main__':
-    find_all_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], True)
+
+    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+
+        # for d in dictionariesq:
+        for s, suri in d.items():
+            # t = Thread(target=mine_all_rules, args=(DBPEDIA_URL, s, suri, quick,))
+            # t.start()
+            find_all_incs( s, suri, True)

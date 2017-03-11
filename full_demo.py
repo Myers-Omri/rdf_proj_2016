@@ -1,14 +1,28 @@
 from miner import *
 from Utils import *
-from find_inconsistecies import fix_dbpedia
+from find_inconsistecies import find_all_incs
+from get_rules import get_all_rules
+from get_incs import  get_all_incs
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
 
 
 def mine_rules_find_incs(s, suri, quick):
-    mine_all_rules(DBPEDIA_URL, s, suri, quick)
-    fix_dbpedia(DBPEDIA_URL_UP, {}, suri, s, load=True)
+    stage = ""
+    try:
+        stage= "before"
+        mine_all_rules(DBPEDIA_URL, s, suri, quick)
+        stage = "after allrules"
+        get_all_rules(s)
+        stage = " after get all rules"
+        find_all_incs(s, suri, fast=quick)
+        stage = "after find all incs"
+        get_all_incs(s)
+        stage = "after get all incs"
+    except:
+        print "went off at s:{}, stage:{} ".format(s, stage)
+
 
 
 if __name__ == '__main__':

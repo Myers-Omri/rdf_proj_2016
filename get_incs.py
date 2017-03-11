@@ -80,14 +80,15 @@ def get_incs_p(subj_name):
 
 
 
-def get_all_incs(dict_list):
-    for d in dict_list:
-        for s, suri in d.items():
-            get_incs_f(s)
-            get_incs_p(s)
+def get_all_incs(subj):
+    get_incs_f(subj)
+    get_incs_p(subj)
 
 if __name__ == '__main__':
-    get_all_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}])
+
+    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+        for s, suri in d.items():
+            get_all_incs(s)
 
 
 

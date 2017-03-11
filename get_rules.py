@@ -78,16 +78,17 @@ def print_f_rules_to_csv(subj):
     csvfile1.close()
 
 
-def get_all_rules(dict_list):
-    for d in dict_list:
-        for s, suri in d.items():
-            print_rules_to_csv(s)
-            print_f_rules_to_csv(s)
+def get_all_rules(subj):
+    print_rules_to_csv(subj)
+    print_f_rules_to_csv(subj)
 
 
 if __name__ == '__main__':
 
-    get_all_rules([{'comedian': "http://dbpedia.org/ontology/Comedian"}])
+    #get_all_rules([{'comedian': "http://dbpedia.org/ontology/Comedian"}])
+    for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
+        for s, suri in d.items():
+            get_all_rules(s)
     #for d in dictionaries:
 
         
