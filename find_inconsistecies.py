@@ -213,7 +213,7 @@ def fix_graphic(db, r_graph, s_uri, subj, fast=True, load = False):
 
 
 
-def find_p_incs(DBPEDIA_URL, s, suri):
+def find_p_incs(DBPEDIA_URL, s, suri, fast=False):
     rf_name = s + "/" + s + "_f_rules.dump"
     #rg_name = subj + "/" + subj + "_pg.dump"
     if not os.path.exists(rf_name):
@@ -235,6 +235,9 @@ def find_p_incs(DBPEDIA_URL, s, suri):
     while cont:
         subs, cont = get_subjects(suri, i)
         i += 1
+        if fast:
+            if i==1:
+                cont = False
         for j, su in enumerate(subs):
             p_o_dict = fet.get_po_dict(su)
             #l1 = p_o_dict.items()
@@ -269,12 +272,14 @@ def rules_dict_from_dump(dump_name):
         return p_dict
 
 
-if __name__ == '__main__':
 
+def find_all_incs(dict_list, fast):
     rules = {}
-    #for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
-    for d in dictionariest:
+    for d in dict_list:
         for s, suri in d.items():
-            #fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-            find_p_incs(DBPEDIA_URL, s, suri)
+            fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
+            find_p_incs(DBPEDIA_URL, s, suri, True)
             # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
+
+if __name__ == '__main__':
+    find_all_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], True)
