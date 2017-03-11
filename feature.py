@@ -92,7 +92,7 @@ class DbpKiller():
         return float(tot_sim)/len(p1)
 
 
-    def kill_dbp(self, quick, sim_th=0.7):
+    def kill_dbp(self, quick, sim_th=0.8):
         print "mining rules for {}".format(self.subject)
         s_dump_name = self.subject + "/" + self.subject + "_top.dump"
         #p_dump_name = self.subject + "/" + self.subject + "_prop_p.dump"
@@ -126,7 +126,7 @@ class DbpKiller():
                             sim_tup_dict[(p2[0], p1[0])] += sim
 
         for ps, tot_sim in sim_tup_dict.items():
-            if float(tot_sim)/len(s_dict) < 0.2:
+            if float(tot_sim)/len(s_dict) < 0.3:
                 sim_tup_dict.pop(ps, None)
 
         dir_name = self.subject
