@@ -15,7 +15,7 @@ def get_incs_f(subj_name):
     incs_file.close()
     csvf_name = subj_name + "/" + subj_name + "_incs.csv"
     csvf_dbo_name = subj_name + "/" + subj_name + "_incs_dbot.csv"
-    for inc_dict, inc_name in [(inco_dict, csvf_name), (inco_dbot_dict, csvf_dbo_name)]:
+    for (inc_dict, inc_name) in [(inco_dict, csvf_name), (inco_dbot_dict, csvf_dbo_name)]:
         with open(inc_name, 'w') as csvfile:
             fieldnames = ['Person', 'Property', 'Type', 'rn', 'rel_rate']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -81,7 +81,7 @@ def get_incs_p(subj_name):
 
 
 def get_all_incs(dict_list):
-    for d in dictionaries:
+    for d in dict_list:
         for s, suri in d.items():
             get_incs_f(s)
             get_incs_p(s)

@@ -171,17 +171,17 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             for inner_res in results_inner["results"]["bindings"]:
                 s = inner_res["s"]["value"]
 
-                rel_rate = check_rel(t, s, p, G)
+                #rel_rate = check_rel(t, s, p, G)
                 if s not in inco_dbot_dict:
                     inco_dbot_dict[s] = []
-                inco_dbot_dict[s].append((p, t, rn, rel_rate))
+                inco_dbot_dict[s].append((p, t, rn, -1 ))
 
     if not os.path.exists(subj):
         os.makedirs(subj)
-
+    incos = (inco_dict, inco_ons, inco_dbot_dict)
     dump_name = subj + "_incs.dump"
     inc_file = open(subj + "/" + dump_name, 'w')
-    incos = (inco_dict, inco_ons, inco_dbot_dict)
+
     pickle.dump(incos, inc_file)
     inc_file.close()
     return incos
@@ -314,7 +314,7 @@ def find_all_incs(dict_list, fast):
     for d in dict_list:
         for s, suri in d.items():
             fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-            find_p_incs(DBPEDIA_URL, s, suri, True)
+            # find_p_incs(DBPEDIA_URL, s, suri, True)
             # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
 
 if __name__ == '__main__':
