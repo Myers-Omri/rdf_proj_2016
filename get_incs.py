@@ -10,7 +10,7 @@ def get_incs_f(subj_name):
         return
     incs_file = open(rf_name, 'r')
     incos = pickle.load(incs_file)
-    if len(incos) < 2: return
+    if len(incos) < 3: return
     (inco_dict, inco_ones, inco_dbot_dict) = incos
     incs_file.close()
     csvf_name = subj_name + "/" + subj_name + "_incs.csv"
