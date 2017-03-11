@@ -59,7 +59,7 @@ class DbpKiller():
                     WHERE{
                             <%s> ?p ?o .
                             ?o a ?t.
-                            FILTER regex(?p, "^http://dbpedia.org/property/", "i")
+                            FILTER (regex(?p, "^http://dbpedia.org/property/", "i") || regex(?p, "^http://dbpedia.org/ontology/", "i"))
                         } """ % (s))
 
         self.sparql.setQuery(query_text)
@@ -92,7 +92,7 @@ class DbpKiller():
         return float(tot_sim)/len(p1)
 
 
-    def kill_dbp(self, quick, sim_th=0.8):
+    def kill_dbp(self, quick, sim_th=0.5):
         print "mining rules for {}".format(self.subject)
         s_dump_name = self.subject + "/" + self.subject + "_top.dump"
         #p_dump_name = self.subject + "/" + self.subject + "_prop_p.dump"
@@ -141,8 +141,15 @@ class DbpKiller():
 
 
 
-if __name__ == '__main__':
-    for d in dictionariest:
+def find_p_incs(dict_list):
+    for d in dict_list:
         for s, suri in d.items():
             dk = DbpKiller(DBPEDIA_URL, s, suri)
             dk.kill_dbp(quick=True)
+
+
+if __name__ == '__main__':
+
+    find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}])
+
+
