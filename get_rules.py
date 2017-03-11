@@ -14,8 +14,9 @@ def print_rules_to_csv(subj):
     rules_file = open(rf_name, 'r')
     all_rules = pickle.load(rules_file)
     if len(all_rules) < 6: return
-    good, r60_70, r50_60, weird , ons, lows= all_rules
+   # good, r60_70, r50_60, weird , ons, lows= all_rules
     rules_file.close()
+    #all_rules_list = (rules70_, rules60_70, rules70_dbo, rules_wierd, rules_wierd_dbo, one_of_a_kind, low_props)
     csv_names = ['good.csv', 'r60_70.csv', 'rtop_dbot.csv', 'weird.csv', 'rules_wierd_dbo.csv',  'ons.csv', 'lows.csv']
 
     for rd, csvn in zip(all_rules, csv_names):
@@ -74,15 +75,18 @@ def print_f_rules_to_csv(subj):
     csvfile1.close()
 
 
-if __name__ == '__main__':
-
-
-
-
-    for d in dictionaries:
+def get_all_rules(dict_list):
+    for d in dict_list:
         for s, suri in d.items():
             print_rules_to_csv(s)
             print_f_rules_to_csv(s)
+
+
+if __name__ == '__main__':
+
+    get_all_rules([{'comedian': "http://dbpedia.org/ontology/Comedian"}])
+    #for d in dictionaries:
+
         
 
     # rules_file = open("rules.dump", 'r')
