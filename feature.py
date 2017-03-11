@@ -58,6 +58,7 @@ class DbpKiller():
                     SELECT DISTINCT ?p ?o
                     WHERE{
                             <%s> ?p ?o .
+                            ?o a ?t.
                             FILTER regex(?p, "^http://dbpedia.org/property/", "i")
                         } """ % (s))
 

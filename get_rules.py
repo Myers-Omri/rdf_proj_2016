@@ -16,7 +16,7 @@ def print_rules_to_csv(subj):
     if len(all_rules) < 6: return
     good, r60_70, r50_60, weird , ons, lows= all_rules
     rules_file.close()
-    csv_names = ['good.csv', 'r60_70.csv', 'r50_60.csv', 'weird.csv', 'ons.csv', 'lows.csv']
+    csv_names = ['good.csv', 'r60_70.csv', 'rtop_dbot.csv', 'weird.csv', 'rules_wierd_dbo.csv',  'ons.csv', 'lows.csv']
 
     for rd, csvn in zip(all_rules, csv_names):
         csvf_name = subj + "/" + csvn

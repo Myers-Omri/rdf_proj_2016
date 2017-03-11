@@ -21,7 +21,7 @@ class miner():
         self.subject_uri = s_uri
         self.sparql = SPARQLWrapper(kb)
         self.RG = graphp.SubjectGraph(s_uri)
-        self.timers = {'get_os': 0, 'update_so_dict': 0}
+        self.timers = {'get_os': 0, 'update_so_dict': 0, 'get_dbo_ts': 0}
 
     def get_ot_unique_dict(self, o_list, o_dict_t):
         res_dict = {}
@@ -119,6 +119,42 @@ class miner():
             self.timers['get_os'] += total_time
         return o_dict
 
+
+    def get_dbots_for_o(self, o_list):
+
+        """
+        Given list of object and a specific knowledge base creates a dictionary of o and the list of dbo:type that
+        defines it
+
+        :param o_list: list of object for specific relation
+        :param db: the KB we query
+        :return: o_dict dictionar {'<object>' : [c1,c2,c3...] (type list)
+        """
+        if PROFILER:
+            t0 = time.time()
+        o_dict = {}
+        for o in o_list:
+            o_dict[o] = []
+            self.sparql.setQuery("""
+                                SELECT  DISTINCT  ?c
+                                WHERE{
+                                    <%s>  <http://dbpedia.org/ontology/type>   ?c .
+                                    FILTER regex(?c, "^http://dbpedia.org", "i")
+                                }
+                            """ % o)
+
+            # need to filter the types to informative ones.
+            self.sparql.setReturnFormat(JSON)
+            results = self.sparql.query().convert()
+
+            for result in results["results"]["bindings"]:
+                c = result["c"]["value"]
+                o_dict[o].append(c)
+        if PROFILER:
+            t1 = time.time()
+            total_time = t1 - t0
+            self.timers['get_dbo_ts'] += total_time
+        return o_dict
 
     def update_graph(self,s, p , t_dict):
         for t, u in t_dict.items():
@@ -248,9 +284,11 @@ class miner():
         p_dict = self.get_p_dict_from_dump(quick, p_dump_name)
         s_dict = self.get_s_dict_from_dump(quick, s_dump_name)
         rules70_ = {}
+        rules70_dbo = {}
         rules60_70 = {}
-        rules50_60= {}
+        rules50_60 = {}
         rules_wierd = {}
+        rules_wierd_dbo = {}
         one_of_a_kind = {}
         low_props = {}
         progress = 0
@@ -262,6 +300,7 @@ class miner():
             #s_dict = {}
             #this dictionary holds the statistics for every p separately p_unique_t_dict[t]={'pos': #uniqueness, 'tot': #totalappearence}
             p_unique_t_dict = {}
+            p_unique_dbot_dict = {}
              #s is a sepecific person and os=[o1,o2,o3] is the list of objects that are in the relation: P(s,o)
             #
             p_count = 0
@@ -273,13 +312,17 @@ class miner():
                 if len(o_list) > 0:
                     p_count += 1
                 ot_dict = self.get_ts_for_o(o_list)
+                odbot_dict = self.get_dbots_for_o(o_list)
 
                 #t_dict_rel = self.get_ot_unique_dict_rel(o_list, ot_dict)  # Done: for specific person and property find the unique types!
                 t_dict = self.get_ot_unique_dict(o_list, ot_dict)  # Done: for specific person and property find the unique types!
+                dbo_t_dict = self.get_ot_unique_dict(o_list, odbot_dict)  # Done: for specific person and property find the unique types!
+
                 if len(o_list) > 1:
                     #ot_dict is list of types for every o in the list for specific person and property
 
                     self.update_pt(t_dict,p_unique_t_dict) #Done: add up the times that t was unique for the specific p
+                    self.update_pt(dbo_t_dict,p_unique_dbot_dict) #Done: add up the times that t was unique for the specific p
                 elif len(o_list) == 1:
                     p_only_one += 1
 
@@ -319,6 +362,23 @@ class miner():
                 else:
                     low_props[t_key] = data
 
+            for t, counts in p_unique_dbot_dict.items():
+                pos = float(counts['pos'])
+                tot = float(counts['tot'])
+                data = {'p': p, 't': t, 'pos': pos, 'tot': tot}
+                if tot != 0:
+                    data['ratio'] = pos / tot
+                t_key = t + '@' + p
+                if float(p_count) / len(s_dict) > 0.1:
+                    if p_count > 0:
+                        # if (tot/p_count) >= min_pos_th:
+                        if (tot >= 5):
+                            if ((pos / tot) >= positive_total_ratio_th):
+                                rules70_dbo[t_key] = data
+                        else:
+                            rules_wierd_dbo[t_key] = data
+
+
             if float(p_count) / len(s_dict) > 0.1:
                 if p_count > 0:
                     p_once_ratio = float(p_only_one)/p_count
@@ -334,9 +394,7 @@ class miner():
                 sys.stdout.write("\r")
                 sys.stdout.flush()
 
-
-
-        all_rules_list = (rules70_ ,rules60_70, rules50_60 ,rules_wierd, one_of_a_kind, low_props)
+        all_rules_list = (rules70_, rules60_70, rules70_dbo, rules_wierd, rules_wierd_dbo, one_of_a_kind, low_props)
 
         dir_name = self.subject
         if not os.path.exists(dir_name):
