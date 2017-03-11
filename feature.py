@@ -136,7 +136,7 @@ class DbpKiller():
 
 
         for ps, counts in sim_tup_dict.items():
-            if float(counts['tot'])/len(s_dict) > 0.5:
+            if float(counts['tot'])/len(s_dict) > 0.2:
                 if float(counts['sim'])/counts['tot'] > tot_retio:
                     sim_res_rules[ps] = counts
         if DEBUG:
@@ -165,8 +165,8 @@ def find_p_incs(dict_list, th, tut, quick=True):
 
 if __name__ == '__main__':
     DEBUG = True
-    for ret_th in [0.65, 0.7, 0.75, 0.8]:
-        for ret_tot in [ 0.6, 0.7, 0.75, 0.8]:
+    for ret_th in [0.5, 0.6, 0.65, 0.7, 0.75, 0.8]:
+        for ret_tot in [0.5, 0.6, 0.7, 0.75, 0.8]:
             find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], ret_th, ret_tot, True)
 
 
