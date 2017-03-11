@@ -117,15 +117,15 @@ class DbpKiller():
                     sim = self.get_sim(p1[1],p2[1])
                     if p1[0] < p2[0]:
                         if (p1[0], p2[0]) not in sim_tup_dict:
-                            sim_tup_dict[(p1[0], p2[0])]['tot'] = 0
-                            sim_tup_dict[(p1[0], p2[0])]['sim'] = 0
+                            sim_tup_dict[(p1[0], p2[0])] = {'tot': 0, 'sim': 0}
+                            #sim_tup_dict[(p1[0], p2[0])] = 0
                         sim_tup_dict[(p1[0], p2[0])]['tot'] += 1
                         if sim > sim_th:
                             sim_tup_dict[(p1[0], p2[0])]['sim'] += 1
                     else:
                         if (p2[0], p1[0]) not in sim_tup_dict:
-                            sim_tup_dict[(p2[0], p1[0])]['tot'] = 0
-                            sim_tup_dict[(p2[0], p1[0])]['sim'] = 0
+                            sim_tup_dict[(p2[0], p1[0])] = {'tot': 0, 'sim': 0}
+                            #sim_tup_dict[(p2[0], p1[0])]['sim'] = 0
                         sim_tup_dict[(p2[0], p1[0])]['tot'] += 1
                         if sim > sim_th:
                             sim_tup_dict[(p2[0], p1[0])]['sim'] += 1
