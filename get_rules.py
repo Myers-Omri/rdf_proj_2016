@@ -67,9 +67,10 @@ def print_f_rules_to_csv(subj):
             p1_uni = (p1).encode('utf-8')
             p2_uni = (p2).encode('utf-8')
 
-            pos = float(r)
+            sim = float(r['sim'])
+            tot = float(r['tot'])
 
-            data = {'p1': p1_uni, 'p2': p2_uni, 'Ratio': pos}
+            data = {'p1': p1_uni, 'p2': p2_uni, 'Ratio': sim/tot}
             writer.writerow(data)
 
     csvfile1.close()
