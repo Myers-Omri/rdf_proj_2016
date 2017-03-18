@@ -82,7 +82,8 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
     inco_dict = {}
     inco_ons ={}
     inco_dbot_dict = {}
-    for d, rn in [(rules, '85' ), (r_67, '67')]:
+    #for d, rn in [(rules, '85' ), (r_67, '67')]:
+    for d, rn in [(rules, '85' )]:
         for key, r in d.items():
             i+=1
             p = r['p']
@@ -277,7 +278,7 @@ def find_p_incs(DBPEDIA_URL, s, suri, all_incs, fast=False):
             if i==1:
                 cont = False
         for j, su in enumerate(subs):
-            if su in all_incs[0] or su in all_incs[1]:
+            if su in all_incs[0] or su in all_incs[1] or su in all_incs[2]:
                 p_o_dict = fet.get_po_dict(su)
                 #l1 = p_o_dict.items()
                 for d in all_p_rules:
@@ -315,7 +316,7 @@ def rules_dict_from_dump(dump_name):
 def find_all_incs( s, suri, fast=False):
     rules = {}
     incs = fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-    #find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
+    find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
     # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
 
 if __name__ == '__main__':

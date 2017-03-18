@@ -5,6 +5,8 @@ from get_rules import get_all_rules
 from get_incs import  get_all_incs
 from feature import find_p_incs
 from find_top_sp import get_ps
+from e_sender import send_email
+
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
 DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
@@ -13,20 +15,27 @@ DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
 def mine_rules_find_incs(s, suri, quick):
     stage = ""
     try:
-        #get_ps(suri, s)
+        get_ps(suri, s)
         stage= "before"
-        #mine_all_rules(DBPEDIA_URL, s, suri, quick)
+        print stage , s
+        mine_all_rules(DBPEDIA_URL, s, suri, quick)
         stage = "after allrules"
-        #get_all_rules(s)
+        print stage , s
+        get_all_rules(s)
         stage = " after get all rules"
+        print stage , s
         #find_p_incs(s, suri, th=0.8, tut=0.7, quick=False) // included in find all incs    
-        stage = " after find p incs"
+        #stage = " after find p incs"
         find_all_incs(s, suri, fast=quick)
         stage = "after find all incs"
+        print stage , s
         get_all_incs(s)
         stage = "after get all incs"
+        print stage , s
     except:
-        print "went off at s:{}, stage:{} ".format(s, stage)
+        msg = "went off at s:{}, stage:{} ".format(s, stage)
+        print msg
+        send_email("error at full demo", msg)
 
 
 
@@ -40,11 +49,20 @@ if __name__ == '__main__':
    # positive_total_ratio_th = 0.82  #selected after trying few values found to be the most suitable for the ration between
     #positive to total appearence where the positive is when tuple (p,t ) is unique
 
-    for d in dictionariest:
+    #for d in dictionariest:
+    threads = []
+    for d in [subjectsLive]:
         for s, suri in d.items():
             t = Thread(target=mine_rules_find_incs, args=(s, suri, quick,))
+            threads.append(t)
             t.start()
-
+    
+    for trd in threads:
+        trd.join()
+    
+    msg = "finished full demo "
+    print msg
+    send_email("success", msg)
                 
 
 
