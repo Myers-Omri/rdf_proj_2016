@@ -319,6 +319,14 @@ def find_all_incs( s, suri, fast=False):
     find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
     # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
 
+
+def find_only_p_incs(s, suri, fast=False):
+    #rules = {}
+    dump_name = s + "/" + s + "_incs.dump"
+    incs = rules_dict_from_dump(dump_name)
+    find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
+    # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
+
 if __name__ == '__main__':
 
     for d in [{'comedian': "http://dbpedia.org/ontology/Comedian"}]:
