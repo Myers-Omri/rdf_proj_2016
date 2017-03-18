@@ -15,19 +15,19 @@ DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
 def mine_rules_find_incs(s, suri, quick):
     stage = ""
     try:
-        get_ps(suri, s)
-        stage= "before"
-        print stage , s
-        mine_all_rules(DBPEDIA_URL, s, suri, quick)
-        stage = "after allrules"
-        print stage , s
-        get_all_rules(s)
+        # get_ps(suri, s)
+        # stage= "before"
+        # print stage , s
+        # mine_all_rules(DBPEDIA_URL, s, suri, quick)
+        # stage = "after allrules"
+        # print stage , s
+        # get_all_rules(s)
         stage = " after get all rules"
         print stage , s
-        #find_p_incs(s, suri, th=0.8, tut=0.7, quick=False) // included in find all incs    
-        #stage = " after find p incs"
-        find_all_incs(s, suri, fast=quick)
-        stage = "after find all incs"
+        find_p_incs(s, suri, th=0.8, tut=0.7, quick=False)
+        stage = " after find p incs"
+        # find_all_incs(s, suri, fast=quick)
+        # stage = "after find all incs"
         print stage , s
         get_all_incs(s)
         stage = "after get all incs"
