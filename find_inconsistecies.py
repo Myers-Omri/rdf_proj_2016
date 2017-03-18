@@ -118,20 +118,21 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
 
     for p in ons:
         query_text = ("""
-            SELECT ?s (COUNT(*) AS ?cnt)
+            SELECT * 
             WHERE {
             {
-                SELECT DISTINCT ?s ?o
-                WHERE{
-
-                    ?s a <%s>;
-                     <%s> ?o .
-                     ?o a ?t.
-
+                SELECT ?s (COUNT(*) AS ?cnt)
+                WHERE {
+                {
+                    SELECT DISTINCT ?s ?o
+                    WHERE{
+                        ?s a <%s>;
+                        <%s> ?o .
+                        ?o a ?t.
+                    }                  
+                }
                 }GROUP BY ?s
-                ORDER BY DESC(?cnt)
-            }
-            FILTER (?cnt > 1)
+            }FILTER (?cnt > 1)
             }""" % (s_uri, p))
         sparql.setQuery(query_text)
         sparql.setReturnFormat(JSON)
@@ -314,7 +315,7 @@ def rules_dict_from_dump(dump_name):
 def find_all_incs( s, suri, fast=False):
     rules = {}
     incs = fix_dbpedia(DBPEDIA_URL, rules, suri, s, load=True)
-    find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
+    #find_p_incs(DBPEDIA_URL, s, suri, incs, fast)
     # fix_graphic(DBPEDIA_URL, rules, suri, s,fast=True, load=True)
 
 if __name__ == '__main__':

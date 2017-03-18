@@ -30,13 +30,13 @@ dictionaries = [subjectsPerson, subjectsPlaces, subjectsLive]
 
 
 
-dictionariest = [{#"Company": "http://dbpedia.org/ontology/Company",
-                  #'comedian': "http://dbpedia.org/ontology/Comedian",
-                  #'Mammal': "http://dbpedia.org/ontology/Mammal",
-                  #"EducationalInstitution": "http://dbpedia.org/ontology/EducationalInstitution",
+dictionariest = [{"Company": "http://dbpedia.org/ontology/Company",
+                  'comedian': "http://dbpedia.org/ontology/Comedian",
+                  'Mammal': "http://dbpedia.org/ontology/Mammal",
+                  "EducationalInstitution": "http://dbpedia.org/ontology/EducationalInstitution",
                   'politician': "http://dbpedia.org/ontology/Politician",
-                  #'architectural_structure': "http://dbpedia.org/ontology/ArchitecturalStructure",
-                    'Fish': "http://dbpedia.org/ontology/Fish" }]
+                  'architectural_structure': "http://dbpedia.org/ontology/ArchitecturalStructure",
+                    'person': "http://dbpedia.org/ontology/Person" }]
 
 dictionariesq = [{'comedian': "http://dbpedia.org/ontology/Comedian",
                   "EducationalInstitution": "http://dbpedia.org/ontology/EducationalInstitution",

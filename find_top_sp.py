@@ -196,9 +196,9 @@ def get_ps(uri, s_name ):
     pprop_fname = s_name + "_prop.dump"
     pprop_fname_p = s_name + "_prop_p.dump"
 
-    # get_all_top_of(uri, subjects_fname, s_name)
-    # get_all_p_dict(uri, pprop_fname, s_name)
-    get_p_p_dict(uri, pprop_fname_p, s_name)
+    get_all_top_of(uri, subjects_fname, s_name)
+    get_all_p_dict(uri, pprop_fname, s_name)
+    #get_p_p_dict(uri, pprop_fname_p, s_name)
 
     print "finished: " + s_name
 
