@@ -1,6 +1,6 @@
 from miner import *
 from Utils import *
-from find_inconsistecies import find_all_incs
+from find_inconsistecies import find_all_incs, find_only_p_incs
 from get_rules import get_all_rules
 from get_incs import  get_all_incs
 from feature import find_p_incs
@@ -24,10 +24,12 @@ def mine_rules_find_incs(s, suri, quick):
         # get_all_rules(s)
         stage = " after get all rules"
         print stage , s
-        find_p_incs(s, suri, th=0.8, tut=0.7, quick=False)
-        stage = " after find p incs"
-        # find_all_incs(s, suri, fast=quick)
-        # stage = "after find all incs"
+        # find_p_incs(s, suri, th=0.8, tut=0.7, quick=False)
+        # stage = " after find p incs"
+        #find_all_incs(s, suri, fast=quick)
+
+        find_only_p_incs(s, suri, fast=quick)
+        stage = "after find all incs"
         print stage , s
         get_all_incs(s)
         stage = "after get all incs"
