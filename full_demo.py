@@ -5,6 +5,7 @@ from get_rules import get_all_rules
 from get_incs import  get_all_incs
 from feature import find_feature_incs
 from find_top_sp import get_ps
+from get_s_dict import get_subj_from_dump
 from e_sender import send_email
 
 
@@ -16,6 +17,7 @@ def mine_rules_find_incs(s, suri, quick):
     stage = ""
     try:
         get_ps(suri, s)
+        get_subj_from_dump(s)
         stage= "before"
         print stage , s
         mine_all_rules(DBPEDIA_URL, s, suri, quick)
