@@ -36,8 +36,8 @@ def mine_rules_find_incs(s, suri, quick):
         get_all_incs(s)
         stage = "after get all incs"
         print stage , s
-    except:
-        msg = "went off at s:{}, stage:{} ".format(s, stage)
+    except Exception as e:
+        msg = "went off at s:{}, stage:{}, err is:{} ".format(s, stage,e)
         print msg
         send_email("error at full demo", msg)
 

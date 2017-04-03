@@ -301,7 +301,8 @@ class miner():
 
     def normalize_p_rels(self,p,p_count):
         for rel in self.p_rels[p]:
-            self.p_rels[p][rel] /= p_count
+            if p_count != 0:
+                self.p_rels[p][rel] /= p_count
 
 
     def mine_rules(self, quick, min_pos_th=0.2, positive_total_ratio_th=0.8):
