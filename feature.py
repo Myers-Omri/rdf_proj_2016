@@ -81,15 +81,18 @@ class DbpKiller():
 
 
     def get_sim(self, p1,p2):
-        if len(p1) > len(p2):
-            self.get_sim(p2,p1)
-
         tot_sim = 0
-        for o in p1:
-            if o in p2:
-                tot_sim+=1
+        if len(p1) <= len(p2):
+            for o in p1:
+                if o in p2:
+                    tot_sim+=1
+            return float(tot_sim) / len(p1)
+        else:
+            for o in p2:
+                if o in p1:
+                    tot_sim += 1
+            return float(tot_sim) / len(p2)
 
-        return float(tot_sim)/len(p1)
 
     def get_op_sim_dict(self, sim_res_rules):
         op_sim = {}
@@ -102,7 +105,7 @@ class DbpKiller():
         return  op_sim
 
 
-    def kill_dbp(self, quick, sim_th=0.5, tot_retio=0.5):
+    def kill_dbp(self, quick, sim_th=0.6, tot_retio=0.5):
         if PROFILER:
             t0 = time.time()
         print "mining rules for {}".format(self.subject)
@@ -143,10 +146,6 @@ class DbpKiller():
                         if sim > sim_th:
                             sim_tup_dict[(p2[0], p1[0])]['sim'] += 1
 
-
-
-
-
         for ps, counts in sim_tup_dict.items():
             if float(counts['tot'])/len(s_dict) > 0.1:
                 if float(counts['sim'])/counts['tot'] > tot_retio:
@@ -175,7 +174,42 @@ class DbpKiller():
 
 
 
-def find_p_incs(s, suri, th=0.8, tut=0.7, quick=False):
+    def check_rel_path(self, obj1, obj2):
+
+
+        query = ("""
+        PREFIX dbr: <http://dbpedia.org/resource/>
+        SELECT (COUNT(DISTINCT ?o1) as ?cnt)
+                        WHERE{
+                   OPTIONAL {
+                            <%s> ?p1 ?o1.
+                              ?o1 a ?t1.
+                  <%s> ?p11 ?o1.
+                  }
+               OPTIONAL {
+                            <%s> ?p1 ?o1.
+                              ?o1 a ?t1.
+                   ?o1 ?p11 <%s>.
+                  }
+              OPTIONAL {
+                            ?o1 ?p1  <%s> .
+                              ?o1 a ?t1.
+                  <%s> ?p11 ?o1.
+                  }
+               OPTIONAL {
+                            ?o1 ?p1  <%s> .
+                              ?o1 a ?t1.
+                   ?o1 ?p11 <%s>.
+                  }
+          FILTER (! regex(?p1, "type", "i")).
+          FILTER (! regex(?p11, "type", "i")).
+          FILTER ( ?p1 > ?p11).
+
+        }
+          """% (obj1, obj2, obj1, obj2,obj1, obj2, obj1, obj2))
+
+
+def find_feature_incs(s, suri, th=0.8, tut=0.7, quick=False):
     dk = DbpKiller(DBPEDIA_URL, s, suri)
     dk.kill_dbp(quick,th, tut)
 
@@ -183,7 +217,6 @@ def find_p_incs(s, suri, th=0.8, tut=0.7, quick=False):
 if __name__ == '__main__':
     DEBUG = True
 
-
-    find_p_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], 0.8, 0.7, True)
+    find_feature_incs([{'comedian': "http://dbpedia.org/ontology/Comedian"}], 0.8, 0.7, True)
 
 

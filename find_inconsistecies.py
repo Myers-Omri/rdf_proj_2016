@@ -54,14 +54,50 @@ def check_rel(t, s_uri, p, G):
         else:
             return -1
 
+def check_p_rel(t, s_uri, p, ps_rels):
+
+    sparql = SPARQLWrapper(DBPEDIA_URL)
+    query_text = ("""
+            SELECT distinct  ?r12 ?r21
+            WHERE {
+                    <%s> <%s> ?o1.
+                    <%s> <%s> ?o2.
+                   FILTER (?o1 < ?o2).
+                            ?o1 a <%s>.
+                            ?o2 a <%s>.
+
+                            OPTIONAL {
+                            ?o1 ?r12 ?o2.
+                            ?o2 ?r21 ?o1.
+                            }
+
+                            FILTER regex(?r12, "^http://dbpedia.org/ontology", "i").
+                            FILTER regex(?r21, "^http://dbpedia.org/ontology", "i").
 
 
+            }""" % (s_uri, p, s_uri, p, t, t))
+    sparql.setQuery(query_text)
+    sparql.setReturnFormat(JSON)
+    results_inner = sparql.query().convert()
+    for inner_res in results_inner["results"]["bindings"]:
+        r12 = inner_res["r12"]["value"]
+        r21 = inner_res["r21"]["value"]
+        r12_support = 0
+        r21_support = 0
+        if r12 in ps_rels[p]:
+            r12_support = ps_rels[p][r12]
+        if r21 in ps_rels[p]:
+            r21_support = ps_rels[p][r21]
+
+        return max(r12_support,r21_support)
 
 
 def fix_dbpedia(db, rules, s_uri, subj, load=True):
     rf_name = subj + "/" + subj + "_rules.dump"
-    rg_name = subj + "/" + subj + "_pg.dump"
-    if not os.path.exists(rf_name) or not os.path.exists(rg_name):
+    #rg_name = subj + "/" + subj + "_pg.dump"
+    rp_name = subj + "/" + subj + "_p_rels.dump"
+
+    if not os.path.exists(rf_name) or not os.path.exists(rp_name):
         return
 
     ons = {}
@@ -73,8 +109,8 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
         (rules, r_67, r_7_dbo, wrd, wrd_dbo, ons, lows) = all_rules
         rules_file.close()
 
-        g_file = open(rg_name, 'r')
-        G = pickle.load(g_file)
+        g_file = open(rp_name, 'r')
+        ps_rels = pickle.load(g_file)
         g_file.close()
 
     print "find inconsistencies, number of rules: {} ".format(str(len(rules)))
@@ -112,10 +148,11 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
             for inner_res in results_inner["results"]["bindings"]:
                 s = inner_res["s"]["value"]
 
-                rel_rate = check_rel(t, s, p, G)
+                #rel_rate = check_rel(t, s, p, G)
+                p_rel_rate = check_p_rel(t, s, p, ps_rels)
                 if s not in inco_dict:
                     inco_dict[s] = []
-                inco_dict[s].append((p, t, rn, rel_rate))
+                inco_dict[s].append((p, t, rn, p_rel_rate))
 
     for p in ons:
         query_text = ("""
@@ -175,9 +212,10 @@ def fix_dbpedia(db, rules, s_uri, subj, load=True):
                 s = inner_res["s"]["value"]
 
                 #rel_rate = check_rel(t, s, p, G)
+                p_rel_rate = check_p_rel(t, s, p, ps_rels)
                 if s not in inco_dbot_dict:
                     inco_dbot_dict[s] = []
-                inco_dbot_dict[s].append((p, t, rn, -1 ))
+                inco_dbot_dict[s].append((p, t, rn, p_rel_rate ))
 
     if not os.path.exists(subj):
         os.makedirs(subj)

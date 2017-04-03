@@ -3,7 +3,7 @@ from Utils import *
 from find_inconsistecies import find_all_incs, find_only_p_incs
 from get_rules import get_all_rules
 from get_incs import  get_all_incs
-from feature import find_p_incs
+from feature import find_feature_incs
 from find_top_sp import get_ps
 from e_sender import send_email
 
@@ -24,7 +24,7 @@ def mine_rules_find_incs(s, suri, quick):
         get_all_rules(s)
         stage = " after get all rules"
         print stage , s
-        find_p_incs(s, suri, th=0.8, tut=0.7, quick=False)
+        find_feature_incs(s, suri, th=0.8, tut=0.7, quick=False)
         stage = " after find p incs"
         find_all_incs(s, suri, fast=quick)
 

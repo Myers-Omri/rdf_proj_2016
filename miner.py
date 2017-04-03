@@ -21,7 +21,9 @@ class miner():
         self.subject_uri = s_uri
         self.sparql = SPARQLWrapper(kb)
         self.RG = graphp.SubjectGraph(s_uri)
+        self.p_rels = {}
         self.timers = {'get_os': 0, 'update_so_dict': 0, 'get_dbo_ts': 0}
+
 
     def get_ot_unique_dict(self, o_list, o_dict_t):
         res_dict = {}
@@ -257,10 +259,32 @@ class miner():
                         self.RG.add_relations(t1, t2, p, relations_o12)
                         self.RG.add_relations(t2, t1, p, relations_o21)
 
+    def add_rels_to_p(self, p, relations_o21, relations_o12):
+        if p not in self.p_rels:
+            self.p_rels[p]={}
+        for r in relations_o21:
+            if r not in self.p_rels[p]:
+                self.p_rels[p][r]=0
+            self.p_rels[p][r] += 1
+
+        for r in relations_o12:
+            if r not in self.p_rels[p]:
+                self.p_rels[p][r] = 0
+            self.p_rels[p][r] += 1
+
+
+    def update_p_rel(self, p, o_list):
+        o_len = len(o_list)
+        for i in range(0, o_len):
+            for j in range(i, o_len):
+                o1 = o_list[i]
+                o2 = o_list[j]
+                relations_o12 = self.get_rels(o1, o2)
+                relations_o21 = self.get_rels(o2, o1)
+                self.add_rels_to_p(p, relations_o21, relations_o12)
 
 
     def get_sub_graph(self,s, p_dict, quick = False):
-
         sinles = {}
         for p in p_dict:
             self.RG.add_prop(p)
@@ -274,6 +298,10 @@ class miner():
 
         self.RG.normalize_graph(1, {}, sinles)
         return self.RG
+
+    def normalize_p_rels(self,p,p_count):
+        for rel in self.p_rels[p]:
+            self.p_rels[p][rel] /= p_count
 
 
     def mine_rules(self, quick, min_pos_th=0.2, positive_total_ratio_th=0.8):
@@ -327,7 +355,8 @@ class miner():
                     p_only_one += 1
 
                 #self.update_graph(s, p, t_dict) - move to end of s dict
-                self.update_graph_rel(p, o_list, ot_dict)
+                #self.update_graph_rel(p, o_list, ot_dict)
+                self.update_p_rel(p, o_list)
                 if DEBUG:
                     txt = "\b S loop progress: {}".format(i)
                     sys.stdout.write(txt)
@@ -386,8 +415,8 @@ class miner():
                         one_of_a_kind[p] = p_once_ratio
             progress += 1
 
-
-            self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind,p,  p_count)
+            self.normalize_p_rels(p, p_count)
+            #self.RG.normalize_graph(len(s_dict), rules70_, one_of_a_kind,p,  p_count)
             if DEBUG:
                 txt = "\b Properties progress:{} / {} ".format(progress, p_size)
                 sys.stdout.write(txt)
@@ -487,6 +516,11 @@ def mine_all_rules(dbt, st, surit, Q=False):
     g_file = open(dump_name, 'w')
     pickle.dump(GG, g_file)
     g_file.close()
+
+    dump_name = st + "/" + st + "_p_rels.dump"
+    p_file = open(dump_name, 'w')
+    pickle.dump(mm.p_rels, p_file)
+    p_file.close()
 
     dump_name = st + "/" + st + "_miner.dump"
     m_file = open(dump_name, 'w')
