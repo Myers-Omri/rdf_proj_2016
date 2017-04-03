@@ -9,6 +9,7 @@ from threading import Thread
 from Utils import *
 
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
+DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
 DEBUG = False
 PROFILER = True
@@ -248,9 +249,9 @@ class miner():
                 self.RG.add_type_to_prop(p, t) #, u) ********fix this in graph
 
         o_len = len(o_list)
-        for i in range(0,o_len):
+        for i in range(1,o_len):
             for j in range(i, o_len):
-                o1=o_list[i]
+                o1=o_list[i-1]
                 o2=o_list[j]
                 relations_o12 = self.get_rels(o1, o2)
                 relations_o21 = self.get_rels(o2, o1)
@@ -275,9 +276,9 @@ class miner():
 
     def update_p_rel(self, p, o_list):
         o_len = len(o_list)
-        for i in range(0, o_len):
+        for i in range(1, o_len):
             for j in range(i, o_len):
-                o1 = o_list[i]
+                o1 = o_list[i-1]
                 o2 = o_list[j]
                 relations_o12 = self.get_rels(o1, o2)
                 relations_o21 = self.get_rels(o2, o1)
@@ -300,6 +301,8 @@ class miner():
         return self.RG
 
     def normalize_p_rels(self,p,p_count):
+        if p not in self.p_rels:
+            return
         for rel in self.p_rels[p]:
             if p_count != 0:
                 self.p_rels[p][rel] /= p_count

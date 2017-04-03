@@ -20,7 +20,7 @@ def mine_rules_find_incs(s, suri, quick):
         get_subj_from_dump(s)
         stage= "before"
         print stage , s
-        mine_all_rules(DBPEDIA_URL, s, suri, quick)
+        mine_all_rules(DBPEDIA_URL_UP, s, suri, quick)
         stage = "after allrules"
         print stage , s
         get_all_rules(s)

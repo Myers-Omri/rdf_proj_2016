@@ -9,6 +9,7 @@ from threading import Thread
 from Utils import *
 import re
 DBPEDIA_URL = "http://tdk3.csf.technion.ac.il:8890/sparql"
+DBPEDIA_URL_UP = "http://dbpedia.org/sparql"
 SMAL_URL = "http://cultura.linkeddata.es/sparql"
 DEBUG = False
 PROFILER = True
@@ -210,7 +211,7 @@ class DbpKiller():
 
 
 def find_feature_incs(s, suri, th=0.8, tut=0.7, quick=False):
-    dk = DbpKiller(DBPEDIA_URL, s, suri)
+    dk = DbpKiller(DBPEDIA_URL_UP, s, suri)
     dk.kill_dbp(quick,th, tut)
 
 
