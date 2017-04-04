@@ -57,12 +57,13 @@ if __name__ == '__main__':
     threads = []
     for d in dictionariest:
         for s, suri in d.items():
-            t = Thread(target=mine_rules_find_incs, args=(s, suri, quick,))
-            threads.append(t)
-            t.start()
+            #t = Thread(target=mine_rules_find_incs, args=(s, suri, quick,))
+            #threads.append(t)
+            #t.start()
+            mine_rules_find_incs(s, suri, quick,)
     
-    for trd in threads:
-        trd.join()
+    #for trd in threads:
+     #   trd.join()
     
     msg = "finished full demo "
     print msg
